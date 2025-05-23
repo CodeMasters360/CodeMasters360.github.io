@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' http://worldtimeapi.org">
+</head>
+<body>
+    <div class="container">
+        <h1>OTP Generator</h1>
+
+        <div class="login-container">
+            <input type="password" id="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Enter your PIN">
+            <button id="login-btn">Login</button>
+            <button id="reset-btn-login" class="reset-button">Reset App</button>
+        </div>
+
+        <div class="otp-container" style="display: none;">
+            <div class="otp-header">
+                <div id="current-time"></div>
+                <span id="time-status"></span>
+            </div>
+            <div class="toggle-button-container">
+                <label class="switch">
+                    <input type="checkbox" id="summer-time-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span class="toggle-label">Summer Time</span>
+            </div>
+            <h2>OTP Accounts</h2>
+            <div id="otp-list">
+            </div>
+            <hr>
+            <div id="logout-countdown" style="font-size: 1.5em; font-weight: bold; color: red; margin-top: 10px;"></div>
+            <hr>
+            <button id="show-add-otp-btn">Add new account</button>
+            <div id="add-otp-section" style="display: none;">
+                <input type="text" id="account-name-input" placeholder="Account Name (e.g., Google)">
+                <input type="text" id="new-secret-key-input" placeholder="Secret Key">
+                <button id="add-otp-btn">Add OTP Account</button>
+            </div>
+            <hr>
+            <div class="action-buttons">
+                <button id="logout-btn">Logout</button>
+            </div>
+        </div>
+
+        <div class="set-pin-container" style="display: none;">
+            <input type="password" id="new-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4" placeholder="Set a new 4-digit PIN">
+            <button id="set-pin-btn">Set PIN</button>
+            <button id="reset-btn-setpin" class="reset-button">Reset App</button>
+        </div>
+
+    </div>
+    <div id="notification-container"></div>
+    <div id="custom-alert-modal" class="modal">
+        <div class="modal-content">
+            <p id="modal-message"></p>
+            <div class="modal-buttons">
+                <button id="modal-yes-btn">Yes</button>
+                <button id="modal-no-btn">No</button>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

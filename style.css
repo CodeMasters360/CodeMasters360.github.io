@@ -1,0 +1,385 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f4f7f6;
+    direction: ltr;
+    /* Changed to ltr */
+}
+
+.container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 450px;
+    text-align: center;
+}
+
+h1,
+h2,
+h3 {
+    color: #333;
+    margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="password"] {
+    width: calc(100% - 22px);
+    /* Adjust width considering padding/border */
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+    text-align: left;
+    /* Changed to left for LTR */
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin: 5px;
+    /* Add some margin around buttons */
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#reset-btn,
+#logout-btn {
+    background-color: #dc3545;
+    /* Red color for reset/logout */
+}
+
+#reset-btn:hover,
+#logout-btn:hover {
+    background-color: #c82333;
+}
+
+#set-pin-btn {
+    background-color: #28a745;
+    /* Green for set PIN */
+}
+
+#set-pin-btn:hover {
+    background-color: #218838;
+}
+
+.login-container,
+.set-pin-container,
+.otp-container {
+    display: flex;
+    /* Changed to flex for consistency */
+    flex-direction: column;
+    align-items: center;
+    /* Center items horizontally */
+}
+
+/* --- Styles for OTP List --- */
+#otp-list {
+    width: 100%;
+    margin-top: 15px;
+    margin-bottom: 25px;
+    max-height: 300px;
+    /* Optional: Limit height and add scroll */
+    overflow-y: auto;
+    /* Add scroll if content exceeds max-height */
+}
+
+.otp-list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* Distribute space */
+    background-color: #f9f9f9;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #eee;
+}
+
+.account-name {
+    font-weight: bold;
+    color: #555;
+    flex-grow: 1;
+    /* Allow name to take available space */
+    margin-left: 10px;
+    /* Space after name */
+    text-align: left;
+    /* Changed to left for LTR */
+}
+
+.otp-display {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 1.3rem;
+    /* Larger OTP font */
+    font-weight: bold;
+    color: #0056b3;
+    border: none;
+    background: none;
+    text-align: center;
+    /* Center OTP digits */
+    width: 80px;
+    /* Fixed width for OTP */
+    padding: 5px;
+    margin: 0 10px;
+    /* Space around OTP */
+    letter-spacing: 2px;
+    /* Space out digits */
+}
+
+.delete-btn,
+.copy-btn {
+    padding: 5px 0px;
+    /* Smaller padding for list buttons */
+    font-size: 0.8rem;
+    background-color: #6c757d;
+    /* Greyish color */
+    min-width: 45px;
+    /* Ensure minimum width */
+    text-align: center;
+    /* Center the text horizontally */
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    /* Red for delete */
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+.copy-btn:hover {
+    background-color: #5a6268;
+}
+
+/* --- Add OTP Section --- */
+.add-otp-section {
+    width: 100%;
+    padding: 15px;
+    margin-top: 10px;
+    border: 1px dashed #ccc;
+    border-radius: 5px;
+    background-color: #fafafa;
+}
+
+.add-otp-section input {
+    margin-bottom: 10px;
+}
+
+/* Action buttons container */
+.action-buttons {
+    margin-top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    /* Space out buttons */
+}
+
+/* Add or modify styles for the reset button */
+.reset-button {
+    margin-top: 20px;
+    /* Add space above the reset button */
+    background-color: #dc3545;
+    /* Red color */
+    width: 80%;
+    /* Optional: Make it wider */
+    max-width: 250px;
+    /* Optional: Limit max width */
+    padding: 10px 15px;
+}
+
+.reset-button:hover {
+    background-color: #c82333;
+}
+
+/* Ensure containers have enough space if needed */
+.login-container,
+.set-pin-container {
+    padding-bottom: 15px;
+    /* Add some padding at the bottom */
+}
+
+/* Hide elements initially if needed (JS handles display logic) */
+/* .otp-container, .set-pin-container { display: none; } */
+
+.otp-timer {
+    font-size: 0.8em;
+    /* Smaller font size */
+    color: #777;
+    /* Grey color */
+    margin-left: 10px;
+    /* Space from OTP code */
+}
+
+/* --- Styles for Notification Container --- */
+#notification-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    opacity: 0;
+    z-index: 1000;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#notification-container.show {
+    opacity: 1;
+}
+
+.modal {
+    display: none;
+    /* مخفی به صورت پیش فرض */
+    position: fixed;
+    /* ثابت در صفحه */
+    z-index: 1;
+    /* بالاتر از همه عناصر */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* تمام عرض صفحه */
+    height: 100%;
+    /* تمام ارتفاع صفحه */
+    overflow: auto;
+    /* فعال کردن اسکرول در صورت نیاز */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* پس زمینه مشکی با شفافیت */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    /* 15% از بالا و وسط */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    /* می‌توانید این مقدار را تغییر دهید */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.modal-buttons {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.modal-buttons button {
+    padding: 8px 15px;
+    margin-left: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#modal-yes-btn {
+    background-color: #5cb85c;
+    /* سبز */
+    color: white;
+}
+
+#modal-no-btn {
+    background-color: #d9534f;
+    /* قرمز */
+    color: white;
+}
+
+/* --- New Styles --- */
+.otp-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+
+#time-status {
+    margin-left: 10px;
+    font-style: italic;
+}
+
+#time-status.online {
+    color: green;
+}
+
+.toggle-button-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+}
+
+input:checked+.slider {
+    background-color: #2196F3;
+}
+
+input:focus+.slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked+.slider:before {
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+.toggle-label {
+    margin-left: 10px;
+}
