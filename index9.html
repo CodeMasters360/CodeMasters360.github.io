@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clock Kids - Learning Time in English</title>
+    <link rel="stylesheet" href="styles9.css">
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="screen" id="welcome-screen">
+        <h1>Clock Kids</h1>
+        <h2>Learning Time in English</h2>
+        <button class="start-btn">Start Learning!</button>
+    </div>
+
+    <!-- Main Menu -->
+    <div class="screen hidden" id="main-menu">
+        <div class="score-display">Score: <span id="total-score">0</span></div>
+        <div class="menu-buttons">
+            <button data-screen="learn">Learn Time</button>
+            <button data-screen="quiz">Play Quiz</button>
+            <button data-screen="scores">View Scores</button>
+        </div>
+    </div>
+
+    <!-- Learn Section -->
+    <div class="screen hidden" id="learn-screen">
+        <div class="clock-container">
+            <div class="analog-clock">
+                <div class="clock-face">
+                    <div class="hand hour-hand"></div>
+                    <div class="hand minute-hand"></div>
+                    <div class="center-dot"></div>
+                </div>
+            </div>
+            <div class="digital-clock">
+                <span class="hours">12</span>:<span class="minutes">00</span>
+            </div>
+        </div>
+        <div class="controls">
+            <button id="speak-time">Say Time</button>
+            <button class="back-btn">Back to Menu</button>
+        </div>
+    </div>
+
+    <!-- Quiz Section -->
+    <div class="screen hidden" id="quiz-screen">
+        <div class="score-display">Current Score: <span id="quiz-score">0</span></div>
+        <div class="quiz-clock"></div>
+        <div class="quiz-options"></div>
+        <div class="feedback-message"></div>
+        <button class="back-btn">Back to Menu</button>
+    </div>
+
+    <!-- Scores Section -->
+    <div class="screen hidden" id="scores-screen">
+        <h2>Your Scores</h2>
+        <div class="scores-list"></div>
+        <button class="back-btn">Back to Menu</button>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="correct-sound" src="assets/correct.mp3"></audio>
+    <audio id="wrong-sound" src="assets/wrong.mp3"></audio>
+    <audio id="reward-sound" src="assets/reward.mp3"></audio>
+
+    <script src="script9.js"></script>
+</body>
+</html>
