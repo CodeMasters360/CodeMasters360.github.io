@@ -1,0 +1,76 @@
+/clock-kids-app/clock-kids-app/css/clock.css
+
+/* Clock Styles */
+.clock-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+}
+
+.analog-clock {
+    width: 300px;
+    height: 300px;
+    border: 10px solid #4CAF50;
+    border-radius: 50%;
+    position: relative;
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.clock-face {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.hand {
+    position: absolute;
+    bottom: 50%;
+    left: 50%;
+    transform-origin: bottom;
+    background: #333;
+    border-radius: 4px;
+}
+
+.hour-hand {
+    width: 8px;
+    height: 30%;
+}
+
+.minute-hand {
+    width: 4px;
+    height: 40%;
+    background: #2196F3;
+}
+
+.center-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 12px;
+    background: #333;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.digital-clock {
+    font-size: 3rem;
+    color: #333;
+    background: #FFC107;
+    padding: 1rem;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* Animations */
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}

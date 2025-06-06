@@ -1,0 +1,35 @@
+/clock-kids-app/clock-kids-app/css/responsive.css
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .clock-container {
+        flex-direction: column;
+    }
+
+    .analog-clock {
+        width: 200px;
+        height: 200px;
+        margin-bottom: 2rem;
+    }
+
+    .quiz-options {
+        grid-template-columns: 1fr;
+    }
+
+    .screen {
+        padding: 1rem;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .score-display {
+        font-size: 1.2rem;
+    }
+
+    .feedback-message {
+        font-size: 1.2rem;
+    }
+}
