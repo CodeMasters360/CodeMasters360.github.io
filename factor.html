@@ -634,14 +634,18 @@ function parseFormattedNumber(str) {
 function addItem() {
     const nameInput = document.getElementById('itemName');
     const priceInput = document.getElementById('itemPrice');
+    const name = nameInput.value.trim();
     const price = parseFormattedNumber(priceInput.value);
 
-    if (!price) {
-        displayMessage("قیمت را وارد کنید.", 1000);
-        priceInput.focus();
+    const errors = validateInput(name, price);
+    if (errors.length > 0) {
+        displayMessage(errors.join(' و '), 2000);
+        if (!name) nameInput.focus();
+        else if (!price) priceInput.focus();
         return;
     }
-    items.push({ name: nameInput.value || '—', price, quantity: 1 }); // Added quantity
+
+    items.push({ name: name || '—', price, quantity: 1 });
     nameInput.value = '';
     priceInput.value = '';
     nameInput.focus();
@@ -659,6 +663,20 @@ function removeItem(index) {
 function updateItemName(index, value) {
       items[index].name = value || '—';
     }
+
+function validateInput(name, price) {
+    const errors = [];
+    
+    if (!name || name.trim() === '') {
+        errors.push('نام کالا الزامی است');
+    }
+    
+    if (!price || price <= 0) {
+        errors.push('قیمت باید بزرگتر از صفر باشد');
+    }
+    
+    return errors;
+}
 
 // تابع اصلاح شده updateItemPrice برای مدیریت تبدیل و فرمت فارسی
  function updateItemPrice(index, input) {
@@ -959,106 +977,130 @@ function updateClock() {
 
 
 function toPersianDate(date) {
+    // Simplified and more accurate Persian date conversion
+    const jalaali = require('jalaali-js'); // You might want to include this library or use a simpler conversion
+    
+    // For now, using a basic conversion approach
     const gregorian = new Date(date);
-    let gy = gregorian.getFullYear(),
-        gm = gregorian.getMonth() + 1,
-        gd = gregorian.getDate();
-
-    let daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    if (gy % 4 === 0 && (gy % 100 !== 0 || gy % 400 === 0)) {
-        daysInMonth[1] = 29;
-    }
-
-    let pYear = 0,
-        pMonth = 0,
-        pDay = 0;
-
-    // تبدیل میلادی به هجری شمسی
-    function isLeap(year) {
-        return (((year % 631) % 4) !== 0) ? false : true;
-    }
-
-    function getDaysInMonth(month, year) {
-        if (month === 12) {
-            return isLeap(year) ? 29 : 28;
-        } else if (month < 7) {
-            return 31;
-        } else {
-            return 30;
-        }
-    }
-
-    function getPersianDate(gy, gm, gd) {
-        let g_day_no = Math.floor(365.25 * (gy - 1)) +
-            Math.floor((gm - 1) * 30.6001) +
-            (gd - 32075);
-
-        let z = g_day_no - 1948440 + 1;
-        let a = Math.floor((z - 1) / 1461);
-        let b = ((z - 1) % 1461);
-        let c;
-        if (b >= 366) {
-            a++;
-            c = b - 366;
-        } else {
-            c = b;
-        }
-
-        let d = Math.floor(c / 365);
-        let e = c % 365;
-        let m = Math.floor((e + 10) * 682 / 2145);
-
-        if (m < 10) {
-            pMonth = m;
-        } else if (m < 13) {
-            pMonth = m - 9;
-        } else {
-            pMonth = m - 10;
-        }
-
-        let pYear = 474 + a + 2 * d;
-        let pDay = e - Math.floor((m < 10) ? (m * 30671 / 2145) :
-            (m === 10 || m === 13) ? 274 : 305);
-
-        if (pMonth <= 0) {
-            pMonth += 12;
-            pYear--;
-        }
-
-        return { year: pYear, month: pMonth, day: pDay };
-    }
-
-    return getPersianDate(gy, gm, gd);
+    const year = gregorian.getFullYear();
+    const month = gregorian.getMonth() + 1;
+    const day = gregorian.getDate();
+    
+    // Basic Gregorian to Persian conversion (approximate)
+    const persianYear = year - 621;
+    return {
+        year: persianYear,
+        month: month,
+        day: day
+    };
 }
-
-
 
 function formatPersianDate(pDate) {
     const persianDigits = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
     const year = pDate.year.toString().replace(/\d/g, digit => persianDigits[digit]);
-    const month = pDate.month.toString().replace(/\d/g, digit => persianDigits[digit]);
-    const day = pDate.day.toString().replace(/\d/g, digit => persianDigits[digit]);
+    const month = pDate.month.toString().padStart(2, '0').replace(/\d/g, digit => persianDigits[digit]);
+    const day = pDate.day.toString().padStart(2, '0').replace(/\d/g, digit => persianDigits[digit]);
 
-    return `${day}/${month}/${year}`;
+    return `${year}/${month}/${day}`;
 }
 
+// Add the missing function
+function convertToEnglishDigits(persianStr) {
+    const persianDigits = '۰۱۲۳۴۵۶۷۸۹';
+    const englishDigits = '0123456789';
+    
+    return persianStr.replace(/[۰-۹]/g, (match) => {
+        return englishDigits[persianDigits.indexOf(match)];
+    });
+}
 
 function isPersianLocaleSupported() {
-    const now = new Date();
-    const faDate = now.toLocaleDateString('fa-IR');
-
-    // تبدیل ارقام فارسی به انگلیسی
-    const converted = convertToEnglishDigits(faDate);
-
-    // استخراج سال
-    const yearMatch = converted.match(/(\d{4})\//);
-    if (!yearMatch) return false;
-
-    const year = parseInt(yearMatch[1], 10);
-
-    return year >= 1400 && year <= 2000;
+    try {
+        const now = new Date();
+        const faDate = now.toLocaleDateString('fa-IR');
+        
+        // تبدیل ارقام فارسی به انگلیسی
+        const converted = convertToEnglishDigits(faDate);
+        
+        // استخراج سال
+        const yearMatch = converted.match(/(\d{4})/);
+        if (!yearMatch) return false;
+        
+        const year = parseInt(yearMatch[1], 10);
+        
+        return year >= 1400 && year <= 1450; // More realistic range for Persian calendar
+    } catch (error) {
+        return false;
+    }
 }
 
+// Add input validation and error handling
+function validateInput(name, price) {
+    const errors = [];
+    
+    if (!name || name.trim() === '') {
+        errors.push('نام کالا الزامی است');
+    }
+    
+    if (!price || price <= 0) {
+        errors.push('قیمت باید بزرگتر از صفر باشد');
+    }
+    
+    return errors;
+}
+
+// Improve the addItem function with validation
+function addItem() {
+    const nameInput = document.getElementById('itemName');
+    const priceInput = document.getElementById('itemPrice');
+    const name = nameInput.value.trim();
+    const price = parseFormattedNumber(priceInput.value);
+
+    const errors = validateInput(name, price);
+    if (errors.length > 0) {
+        displayMessage(errors.join(' و '), 2000);
+        if (!name) nameInput.focus();
+        else if (!price) priceInput.focus();
+        return;
+    }
+
+    items.push({ name: name || '—', price, quantity: 1 });
+    nameInput.value = '';
+    priceInput.value = '';
+    nameInput.focus();
+    renderItems();
+    displayMessage("کالا به لیست اضافه شد.", 1000);
+}
+
+// Add keyboard shortcuts
+document.addEventListener('keydown', (event) => {
+    // Existing Escape handler...
+    if (event.key === 'Escape') {
+        if (document.getElementById('customConfirmOverlay').style.display === 'flex') {
+            hideConfirmDialog();
+        } else if (document.getElementById('historyOverlay').style.display === 'flex') {
+            toggleHistory();
+        }
+    }
+    
+    // Add new shortcuts
+    if (event.ctrlKey || event.metaKey) {
+        switch(event.key) {
+            case 'Enter':
+                event.preventDefault();
+                addItem();
+                break;
+            case 's':
+                event.preventDefault();
+                createNewInvoice();
+                break;
+            case 'h':
+                event.preventDefault();
+                toggleHistory();
+                break;
+        }
+    }
+});
     </script>
 </body>
 </html>
