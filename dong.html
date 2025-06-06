@@ -571,7 +571,31 @@
         .delete-all-btn:hover {
             background-color: #c82333;
         }
-		
+
+        .quantity-controls {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 1rem;
+        }
+
+        .quantity-controls button {
+            padding: 0.2rem 0.5rem;
+            margin: 0;
+            font-size: 0.9rem;
+            min-width: 30px;
+        }
+
+        .quantity-display {
+            min-width: 30px;
+            text-align: center;
+        }
+
+        .item-details {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
     </style>
 </head>
 
@@ -935,15 +959,13 @@
             const itemPriceStr = itemPriceInput.value.replace(/,/g, '');
             const itemPrice = parseFloat(itemPriceStr);
 
-            // Price validation is still mandatory
             if (isNaN(itemPrice) || itemPrice < 0) {
                 showToast("لطفا قیمت معتبر (بیشتر از صفر) را وارد کنید.");
                 return;
             }
 
-            // If item name is empty, assign an anonymous name based on the current number of items
             if (itemName === "") {
-                const nextItemNumber = person.items.length + 1; // Corrected logic
+                const nextItemNumber = person.items.length + 1;
                 itemName = `قلم ${nextItemNumber}`;
                 showToast(`نام جنس وارد نشد. جنس به عنوان "${itemName}" اضافه شد.`);
             } else {
@@ -952,11 +974,34 @@
 
             person.items.push({
                 name: itemName,
-                price: itemPrice
+                price: itemPrice,
+                quantity: 1, // Add initial quantity
+                unitPrice: itemPrice // Store the unit price
             });
             renderPeople();
             itemNameInput.value = "";
             itemPriceInput.value = "";
+        }
+
+        function updateItemQuantity(personIndex, itemIndex, change) {
+            const item = people[personIndex].items[itemIndex];
+            const newQuantity = item.quantity + change;
+            
+            if (newQuantity < 1) {
+                showCustomModal(
+                    "آیا می‌خواهید این جنس را حذف کنید؟",
+                    "confirm",
+                    () => removeItem(personIndex, itemIndex),
+                    null,
+                    "حذف جنس"
+                );
+                return;
+            }
+            
+            item.quantity = newQuantity;
+            item.price = item.unitPrice * newQuantity;
+            renderPeople();
+            showToast(`تعداد ${item.name} به ${newQuantity} تغییر کرد.`);
         }
 
         function removeItem(personIndex, itemIndex) {
@@ -1021,9 +1066,19 @@
                             ${itemIndex + 1}.
                             <span class="item-name-display" onclick="editItemDetails(${personIndex}, ${itemIndex}, 'name')">${item.name}</span>
                         </span>
-                        <span>
-                            <span class="item-price-display" onclick="editItemDetails(${personIndex}, ${itemIndex}, 'price')">${formatNumber(item.price)}</span> تومان
-                        </span>
+                        <div class="item-details">
+                            <span>
+                                قیمت واحد: <span class="item-price-display" onclick="editItemDetails(${personIndex}, ${itemIndex}, 'price')">${formatNumber(item.unitPrice)}</span> تومان
+                            </span>
+                            <div class="quantity-controls">
+                                <button onclick="updateItemQuantity(${personIndex}, ${itemIndex}, -1)">-</button>
+                                <span class="quantity-display">${item.quantity}</span>
+                                <button onclick="updateItemQuantity(${personIndex}, ${itemIndex}, 1)">+</button>
+                            </div>
+                            <span>
+                                مجموع: ${formatNumber(item.price)} تومان
+                            </span>
+                        </div>
                         <button onclick="removeItem(${personIndex}, ${itemIndex})" style="background-color: #dc3545;">حذف جنس</button>
                     </div>
                 `;
@@ -1109,8 +1164,7 @@
                 initialValue = item.name;
             } else if (type === 'price') {
                 targetSpan = document.querySelector(`#itemList-${personIndex} > .item:nth-child(${itemIndex + 1}) .item-price-display`);
-                // Pass the raw number for editing, formatNumber is only for display
-                initialValue = item.price;
+                initialValue = item.unitPrice;
             } else {
                 return;
             }
@@ -1121,7 +1175,8 @@
                 if (type === 'name') {
                     item.name = newValue;
                 } else if (type === 'price') {
-                    item.price = newValue;
+                    item.unitPrice = newValue;
+                    item.price = item.unitPrice * item.quantity;
                 }
                 showToast(`تغییرات ذخیره شد.`);
                 renderPeople();
