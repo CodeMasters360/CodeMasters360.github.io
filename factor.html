@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ماشین حساب خرید</title>
+    <link rel="stylesheet" href="factorcss.css">
+</head>
+<body>
+  <header>
+    <div id="clock"></div>
+
+  </header>
+  <main>
+    <!-- ناحیه نمایش پیام شناور جدید -->
+    <div id="floatingMessageArea"></div>
+
+    <div class="form-group">
+      <input type="text" id="itemName" placeholder="نام جنس">
+      <!-- اضافه کردن کلاس price-input برای استایل‌دهی -->
+      <input type="text" id="itemPrice" class="price-input" placeholder="قیمت" oninput="liveFormatPrice(this)" inputmode="numeric">
+  
+  
+  <div class="button-row">
+    <button onclick="addItem()" class="btn-add">افزودن</button>
+    <button onclick="clearItems()" class="btn-clear">حذف لیست</button>
+</div>
+<div class="button-row">
+    <button onclick="createNewInvoice()" class="btn-invoice">فاکتور جدید</button>
+    <button onclick="toggleHistory()" class="btn-history">تاریخچه</button>
+</div>
+  
+      <!-- دکمه خروجی از اینجا به داخل history-container منتقل شده است -->
+    </div>
+    <div class="item-list" id="itemList"></div>
+    <div class="total" id="totalPrice">جمع کل: ۰ تومان</div>
+  </main>
+
+  <!-- Overlay و محتوای تایید سفارشی -->
+  <div class="confirm-overlay" id="customConfirmOverlay">
+      <div class="confirm-container" onclick="event.stopPropagation()">
+          <p id="customConfirmMessage"></p>
+          <div class="confirm-buttons">
+              <button id="customConfirmYes" class="confirm-yes">بله</button>
+              <button id="customConfirmNo" class="confirm-no">خیر</button>
+          </div>
+      </div>
+  </div>
+
+
+  <div class="history-overlay" id="historyOverlay" onclick="toggleHistory(event)">
+    <div class="history-container" onclick="event.stopPropagation()">
+      <!-- دکمه بستن -->
+      <button onclick="toggleHistory()">بستن ❌</button>
+      <!-- دکمه خروجی به اینجا منتقل شده است -->
+      <button onclick="exportHistory()">خروجی تاریخچه (CSV)</button>
+      <h3>تاریخچه فاکتورها</h3>
+      <div id="invoiceHistory">
+        <!-- فاکتورهای تاریخچه اینجا رندر می‌شوند -->
+      </div>
+    </div>
+  </div>
+  <footer>
+  
+برنامۀ فاکتور!
+  </footer>
+
+  <script src="factorjs.js"></script>
+</body>
+</html>
