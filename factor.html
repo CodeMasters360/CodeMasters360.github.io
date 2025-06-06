@@ -640,12 +640,12 @@ function addItem() {
     const errors = validateInput(name, price);
     if (errors.length > 0) {
         displayMessage(errors.join(' و '), 2000);
-        if (!name) nameInput.focus();
-        else if (!price) priceInput.focus();
+        priceInput.focus(); // Focus on price since that's the only required field
         return;
     }
 
-    items.push({ name: name || '—', price, quantity: 1 });
+    // Use default name if empty
+    items.push({ name: name || 'کالا', price, quantity: 1 });
     nameInput.value = '';
     priceInput.value = '';
     nameInput.focus();
@@ -653,6 +653,7 @@ function addItem() {
     displayMessage("کالا به لیست اضافه شد.", 1000);
 }
 
+// تابع حذف آیتم
 function removeItem(index) {
       // نیازی به تایید برای حذف یک آیتم نیست
       items.splice(index, 1);
@@ -667,9 +668,10 @@ function updateItemName(index, value) {
 function validateInput(name, price) {
     const errors = [];
     
-    if (!name || name.trim() === '') {
-        errors.push('نام کالا الزامی است');
-    }
+    // Remove name validation - name is now optional
+    // if (!name || name.trim() === '') {
+    //     errors.push('نام کالا الزامی است');
+    // }
     
     if (!price || price <= 0) {
         errors.push('قیمت باید بزرگتر از صفر باشد');
@@ -1038,9 +1040,10 @@ function isPersianLocaleSupported() {
 function validateInput(name, price) {
     const errors = [];
     
-    if (!name || name.trim() === '') {
-        errors.push('نام کالا الزامی است');
-    }
+    // Remove name validation - name is now optional
+    // if (!name || name.trim() === '') {
+    //     errors.push('نام کالا الزامی است');
+    // }
     
     if (!price || price <= 0) {
         errors.push('قیمت باید بزرگتر از صفر باشد');
@@ -1059,12 +1062,12 @@ function addItem() {
     const errors = validateInput(name, price);
     if (errors.length > 0) {
         displayMessage(errors.join(' و '), 2000);
-        if (!name) nameInput.focus();
-        else if (!price) priceInput.focus();
+        priceInput.focus(); // Focus on price since that's the only required field
         return;
     }
 
-    items.push({ name: name || '—', price, quantity: 1 });
+    // Use default name if empty
+    items.push({ name: name || 'کالا', price, quantity: 1 });
     nameInput.value = '';
     priceInput.value = '';
     nameInput.focus();
