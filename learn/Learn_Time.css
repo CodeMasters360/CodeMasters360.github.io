@@ -1,44 +1,71 @@
+/* Font Definitions */
+@font-face {
+    font-family: 'ComicNeue';
+    src: url('fonts/ComicNeue-Light.ttf') format('truetype');
+    font-weight: 300; /* Light */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ComicNeue';
+    src: url('fonts/ComicNeue-LightItalic.ttf') format('truetype');
+    font-weight: 300; /* Light */
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'ComicNeue';
+    src: url('fonts/ComicNeue-Regular.ttf') format('truetype');
+    font-weight: 400; /* Regular */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ComicNeue';
+    src: url('fonts/ComicNeue-Italic.ttf') format('truetype');
+    font-weight: 400; /* Regular */
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'ComicNeue';
+    src: url('fonts/ComicNeue-Bold.ttf') format('truetype');
+    font-weight: 700; /* Bold */
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ComicNeue';
+    src: url('fonts/ComicNeue-BoldItalic.ttf') format('truetype');
+    font-weight: 700; /* Bold */
+    font-style: italic;
+}
+
 /* Base Styles */
-:root {
-    --primary-color: #4CAF50;
-    --secondary-color: #2196F3;
-    --background-color: #F5F5F5;
-    --text-color: #333333;
-    --accent-color: #FFC107;
-    --error-color: #F44336;
-    --success-color: #4CAF50;
-}
+:root { --primary-color: #4CAF50; --secondary-color: #2196F3; --background-color: #F5F5F5; --text-color: #333; --accent-color: #FFC107; --error-color: #F44336; --success-color: #4CAF50; }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Comic Sans MS', cursive, sans-serif;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'ComicNeue', cursive, sans-serif; }
 
-body {
-    background-color: var(--background-color);
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+body { background: var(--background-color); min-height: 100vh; display: flex; justify-content: center; align-items: center; flex-direction: column; /* Allow multiple screens/modals to stack if not hidden */ }
 
 /* Screen Styles */
 .screen {
     width: 100%;
     max-width: 800px;
-    min-height: 600px;
+    min-height: 400px; /* Adjusted for smaller screens */
+    height: auto; /* Allow content to define height */
     padding: 2rem;
     text-align: center;
-    background: white;
+    background: #fff;
     border-radius: 20px;
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    display: flex; /* Use flex for internal layout */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Center content vertically */
+    align-items: center; /* Center content horizontally */
 }
 
-.hidden {
-    display: none;
-}
+.hidden { display: none !important; } /* Ensure hidden takes precedence */
 
 /* Welcome Screen */
 #welcome-screen h1 {
@@ -54,6 +81,42 @@ body {
     margin-bottom: 2rem;
 }
 
+/* Name Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 1rem; /* Add padding for smaller screens */
+}
+
+.modal-content {
+    background: #fff;
+    padding: 1.5rem; /* Adjusted padding */
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 90%;
+    max-width: 450px; /* Slightly wider for more content */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.modal-content input[type="text"] {
+    padding: 0.8rem;
+    margin: 1rem 0;
+    width: calc(100% - 1.6rem);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+}
+
 /* Buttons */
 button {
     padding: 1rem 2rem;
@@ -61,7 +124,7 @@ button {
     border: none;
     border-radius: 50px;
     background: var(--primary-color);
-    color: white;
+    color: #fff;
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
     margin: 0.5rem;
@@ -86,13 +149,11 @@ button:hover {
     border: 10px solid var(--primary-color);
     border-radius: 50%;
     position: relative;
-    background: white;
+    background: #fff;
 }
 
-.clock-face {
-    width: 100%;
-    height: 100%;
-    position: relative;
+.clock-face, .center-dot {
+    position: absolute;
 }
 
 .hand {
@@ -107,7 +168,6 @@ button:hover {
 .hour-hand {
     width: 8px;
     height: 30%;
-    background: var(--text-color);
 }
 
 .minute-hand {
@@ -117,7 +177,6 @@ button:hover {
 }
 
 .center-dot {
-    position: absolute;
     top: 50%;
     left: 50%;
     width: 12px;
@@ -136,11 +195,41 @@ button:hover {
 }
 
 /* Quiz Styles */
-.quiz-options {
+.quiz-options, .quiz-clock-options {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin: 2rem 0;
+}
+
+.quiz-clock-options {
+    justify-items: center;
+}
+
+.mini-clock-option {
+    border: 2px solid var(--secondary-color);
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    background: #fff;
+}
+
+.mini-clock-option:hover {
+    background: #e0e0e0;
+    transform: scale(1.05);
+}
+
+.mini-clock-option svg {
+    display: block;
+    margin: auto;
+}
+
+/* Ensure quiz SVG clock is centered */
+.quiz-clock-display {
+    display: flex;
+    justify-content: center;
+    margin: 1rem 0;
 }
 
 .feedback-message {
@@ -157,6 +246,63 @@ button:hover {
     color: var(--error-color);
 }
 
+/* --- Add styles for quiz clock options and feedback --- */
+.quiz-clocks-grid {
+    margin: 20px 0;
+}
+
+.quiz-clock-options-row {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.quiz-clock-option {
+    cursor: pointer;
+    padding: 10px;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    transition: all 0.3s;
+    background: #fff;
+}
+
+.quiz-clock-option:hover {
+    border-color: var(--secondary-color);
+    background-color: #f8f9fa;
+}
+
+.correct-selection {
+    border-color: var(--success-color) !important;
+    background-color: #d4edda !important;
+}
+
+.incorrect-selection {
+    border-color: var(--error-color) !important;
+    background-color: #f8d7da !important;
+}
+
+.correct-highlight {
+    border-color: var(--success-color) !important;
+    background-color: #d4edda !important;
+    animation: pulse 1s infinite;
+}
+
+.quiz-feedback {
+    font-size: 1.2rem;
+    margin: 1rem 0;
+    min-height: 1.5rem;
+    text-align: center;
+}
+
+.quiz-feedback.correct {
+    color: var(--success-color);
+}
+
+.quiz-feedback.incorrect {
+    color: var(--error-color);
+}
+
 /* Score Display */
 .score-display {
     font-size: 1.5rem;
@@ -168,7 +314,7 @@ button:hover {
 #learn-analog-clock {
     display: block;
     margin: 0 auto;
-    background: white;
+    background: #fff;
     border-radius: 50%;
 }
 
@@ -188,29 +334,161 @@ button:hover {
     color: #fff;
 }
 
-/* Animations */
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
+/* Progress Chart Styles */
+#progress-chart {
+    display: block;
+    margin: 0 auto 1rem;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    max-width: 100%;
 }
+
+/* Login and Account Panel Styles */
+#login-modal .modal-content, #account-panel .modal-content {
+    max-width: 400px; /* Unified max-width */
+    width: 90%; /* Responsive width */
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#account-panel .modal-content {
+    min-width: 250px; /* Adjusted min-width */
+    min-height: auto; /* Auto height */
+}
+
+#account-panel, #login-modal { /* No .modal class needed here as it's already on the element */
+    /* display: flex !important; */ /* This will be controlled by adding/removing .hidden */
+}
+#account-panel .modal-content button {
+    margin: 0.5rem 0.2rem;
+    width: 90%;
+    max-width: 220px;
+}
+#account-panel .modal-content p {
+    margin-bottom: 1.5rem;
+    background: var(--primary-color);
+}
+.user-list-delete {
+    margin-left: 0.5rem;
+    color: var(--error-color);
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+#login-section input, #register-section input {
+    width: 100%; /* Full width within padding */
+    max-width: 300px; /* Max width for inputs */
+    margin: 0.5rem 0;
+    padding: 0.7rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1rem;
+}
+
+/* PIN Input Styles */
+.pin-input-container {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem; /* Space between PIN digit inputs */
+    margin: 0.5rem 0 1rem 0; /* Margin around the container */
+}
+
+.pin-digit {
+    width: 40px;  /* Width of each PIN square */
+    height: 45px; /* Height of each PIN square */
+    font-size: 1.5rem; /* Font size for the digit */
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 0; /* Remove default padding if any */
+    line-height: 45px; /* Vertically center digit, same as height */
+    caret-color: var(--primary-color); /* Cursor color */
+}
+
+.pin-digit:focus {
+    border-color: var(--primary-color);
+    outline: 2px solid var(--primary-color-light); /* Optional: focus outline */
+    box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+}
+
+/* Remove spinners from number inputs in WebKit browsers */
+.pin-digit::-webkit-outer-spin-button,
+.pin-digit::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Remove spinners from number inputs in Firefox */
+.pin-digit[type=number] {
+    -moz-appearance: textfield;
+}
+
+
+#login-section button, #register-section button {
+    margin: 0.3rem 0.2rem;
+}
+
+/* Main Menu additions */
+.user-info {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    font-size: 0.9rem;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+}
+
+#display-user-name {
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+#account-panel-btn {
+    font-size: 1.2rem; /* Larger icon */
+    padding: 0.3rem 0.6rem; /* Adjusted padding */
+    margin-left: 0.5rem;
+    background-color: var(--secondary-color);
+    color: white;
+    border-radius: 50%;
+}
+#account-panel-btn:hover {
+    background-color: var(--primary-color);
+}
+
+
+.menu-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+    gap: 1rem;
+    width: 100%;
+    max-width: 600px; /* Limit width of button area */
+    margin-top: 1rem; /* Space from score */
+}
+
+/* Animations */
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .clock-container {
-        flex-direction: column;
-    }
-
-    .analog-clock {
-        width: 200px;
-        height: 200px;
-        margin-bottom: 2rem;
-    }
-
-    .quiz-options {
-        grid-template-columns: 1fr;
-    }
+    .clock-container { flex-direction: column; }
+    .analog-clock { width: 180px; height: 180px; margin-bottom: 1.5rem; } /* Slightly smaller */
+    .quiz-options, .quiz-clock-options { grid-template-columns: 1fr; }
+    .modal-content { width: 90%; padding: 1.5rem; } /* Ensure modal content is responsive */
+    .menu-buttons { grid-template-columns: 1fr; } /* Stack buttons on smaller screens */
+    .user-info { top: 0.5rem; right: 0.5rem; padding: 0.3rem 0.6rem; }
+}
+@media (max-width: 600px) {
+    #login-modal .modal-content, #account-panel .modal-content { max-width: 95vw; padding: 1rem; }
+    .screen { padding: 1rem; min-height: 300px; } /* Adjust padding and min-height */
+    #welcome-screen h1 { font-size: 2.5rem; }
+    #welcome-screen h2 { font-size: 1.2rem; }
+    button { padding: 0.8rem 1.5rem; font-size: 1rem; }
+    .digital-clock { font-size: 2.5rem; }
 }

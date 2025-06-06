@@ -11,11 +11,11 @@
     <div class="screen" id="welcome-screen">
         <h1>Clock Kids</h1>
         <h2 id="welcome-user-name">Learning Time in English</h2>
-        <button class="start-btn">Start Learning!</button>
+        <button id="start-app-btn">Start Learning!</button> <!-- Changed class to ID -->
     </div>
 
-    <!-- Name Modal -->
-    <div id="name-modal" class="screen modal" style="display:none;">
+    <!-- Name Modal (Potentially deprecated, ensure it's hidden if not used by new logic) -->
+    <div id="name-modal" class="screen modal hidden">
         <div class="modal-content">
             <h2>Welcome!</h2>
             <p>Please enter your name to save your progress:</p>
@@ -24,20 +24,84 @@
         </div>
     </div>
 
+    <!-- Login/Register Modal -->
+    <div id="login-modal" class="modal hidden"> <!-- Removed .screen class if modals are handled separately -->
+        <div class="modal-content" id="login-modal-content">
+            <h2>Welcome to Clock Kids!</h2>
+            <div id="user-list-section">
+                <p>Select your name or register:</p>
+                <div id="user-list"></div>
+                <button id="show-register-btn">Register New User</button>
+            </div>
+            <div id="login-section" class="hidden">
+                <p id="login-username-label"></p>
+                <!-- <input type="password" id="login-pin-input" maxlength="4" placeholder="Enter 4-digit PIN"> -->
+                <p>Enter 4-digit PIN:</p>
+                <div id="login-pin-container" class="pin-input-container">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                </div>
+                <button id="login-btn">Login</button>
+                <button id="login-back-btn">Back</button>
+            </div>
+            <div id="register-section" class="hidden">
+                <input type="text" id="register-username-input" maxlength="20" placeholder="New Username">
+                <!-- <input type="password" id="register-pin-input" maxlength="4" placeholder="Choose 4-digit PIN"> -->
+                <p>Choose 4-digit PIN:</p>
+                <div id="register-pin-container" class="pin-input-container">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                    <input type="text" class="pin-digit" maxlength="1" pattern="[0-9]*" inputmode="numeric">
+                </div>
+                <button id="register-btn">Register</button>
+                <button id="register-back-btn">Back</button>
+            </div>
+            <div id="login-error" style="color:var(--error-color);margin-top:1rem;"></div>
+        </div>
+    </div>
+
+    <!-- Account Management Panel -->
+    <div id="account-panel" class="modal hidden"> <!-- Removed .screen class -->
+        <div class="modal-content">
+            <h2>Account Management</h2>
+            <p>Username: <span id="account-username"></span></p>
+            <button id="logout-btn">Logout</button>
+            <button id="delete-account-btn" style="background:var(--error-color);color:#fff;">Delete Account</button>
+            <button id="close-account-panel-btn">Close</button>
+        </div>
+    </div>
+
+    <!-- Delete Account Confirmation Modal -->
+    <div id="delete-confirm-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2>Confirm Deletion</h2>
+            <p id="delete-confirm-message">Are you sure you want to delete this account? This action cannot be undone.</p>
+            <div class="delete-confirm-buttons">
+                <button id="confirm-delete-action-btn" style="background:var(--error-color);color:#fff;">Yes, Delete</button>
+                <button id="cancel-delete-action-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Menu -->
     <div class="screen hidden" id="main-menu">
         <div class="user-info">
-            Logged in as: <span id="display-user-name">Guest</span>
+            Player: <span id="display-user-name">Guest</span>
+            <button id="account-panel-btn" title="Account Management">⚙️</button>
         </div>
+        <h2>Main Menu</h2> <!-- Added a title for the main menu -->
         <div class="score-display">Total Score: <span id="total-score">0</span></div>
         <div class="menu-buttons">
-            <button data-screen="learn">Learn Time</button>
-            <button data-screen="quiz">Quiz: Clock to Text</button>
+            <button data-screen="learn-screen">Learn Time</button>
+            <button data-screen="quiz-screen">Quiz: Clock to Text</button>
             <button data-screen="quiz-audio-text">Quiz: Audio to Text</button>
             <button data-screen="quiz-audio-clock">Quiz: Audio to Clock</button>
-            <button data-screen="scores">View Scores & Progress</button>
-            <button data-screen="howto">How to Use</button>
-            <button data-screen="about">About Creators</button>
+            <button data-screen="scores-screen">View Scores & Progress</button>
+            <button data-screen="howto-screen">How to Use</button>
+            <button data-screen="about-screen">About Creators</button>
         </div>
     </div>
 
@@ -72,7 +136,14 @@
         <div class="score-display">Current Quiz Score: <span id="quiz-score">0</span></div>
         <h3 id="quiz-question-text">What time is it?</h3>
         <div class="quiz-clock-display">
-            <!-- Analog clock will be rendered here by JS -->
+            <svg id="quiz-analog-clock" width="200" height="200" viewBox="0 0 200 200">
+                <circle cx="100" cy="100" r="90" stroke="#4CAF50" stroke-width="10" fill="white"/>
+                <!-- Hour marks for quiz clock -->
+                <g id="quiz-clock-marks"></g>
+                <line id="quiz-hour-hand" x1="100" y1="100" x2="100" y2="55" stroke="#333" stroke-width="8" stroke-linecap="round"/>
+                <line id="quiz-minute-hand" x1="100" y1="100" x2="100" y2="35" stroke="#2196F3" stroke-width="4" stroke-linecap="round"/>
+                <circle cx="100" cy="100" r="6" fill="#333"/>
+            </svg>
         </div>
         <div class="quiz-options">
             <!-- Options will be rendered here by JS -->
@@ -82,7 +153,7 @@
     </div>
 
     <!-- Quiz Section: Audio to Text -->
-    <div class="screen hidden" id="quiz-audio-text-screen">
+    <div class="screen hidden" id="quiz-audio-text">
         <div class="score-display">Current Quiz Score: <span id="quiz-audio-text-score">0</span></div>
         <h3>Listen to the time and choose the correct option:</h3>
         <button id="play-quiz-audio-btn">🔊 Play Time</button>
@@ -94,7 +165,7 @@
     </div>
 
     <!-- Quiz Section: Audio to Clock -->
-    <div class="screen hidden" id="quiz-audio-clock-screen">
+    <div class="screen hidden" id="quiz-audio-clock">
         <div class="score-display">Current Quiz Score: <span id="quiz-audio-clock-score">0</span></div>
         <h3>Listen to the time and choose the correct clock:</h3>
         <button id="play-quiz-audio-clock-btn">🔊 Play Time</button>
@@ -107,13 +178,11 @@
 
     <!-- Scores Section -->
     <div class="screen hidden" id="scores-screen">
-        <h2>Your Scores & Progress</h2>
-        <div id="user-name-scores-display" style="margin-bottom: 1rem; font-size: 1.2rem;">User: <span id="scores-user-name-value"></span></div>
+        <h2>Your Scores</h2>
+        <div id="user-name-scores-display" style="margin-bottom: 1rem; font-size: 1.2rem;">Player: <span id="scores-user-name-value">Guest</span></div>
         <div class="scores-list">
             <!-- High scores will be listed here -->
         </div>
-        <h3>Daily Progress</h3>
-        <canvas id="progress-chart" width="400" height="200"></canvas>
         <button class="back-btn">Back to Menu</button>
     </div>
 
@@ -159,7 +228,22 @@
     <audio id="wrong-sound" src="assets/wrong.mp3"></audio>
     <audio id="reward-sound" src="assets/reward.mp3"></audio>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Added Chart.js library -->
-    <script src="Learn_Time.js"></script>
+    <script type="module" src="Learn_Time.js"></script>
+    <script type="module" src="Learn_Time_Learn.js"></script>
+     <script type="module" src="Quiz_Audio_To_Clock.js"></script>
+    <script type="module" src="Learn_Time_Quiz.js"></script>
+    <script type="module" src="Learn_Time_User.js"></script>
+    <script type="module" src="Learn_Time_Account.js"></script>
+
+    <script type="module" src="Quiz_Audio_To_Text.js"></script>
+    
+    <script type="module" src="Quiz_ClockToText.js"></script>
+    <script type="module" src="Quiz_Clock_To_Text.js"></script>
+   
+
+
+    
+
+
 </body>
 </html>
