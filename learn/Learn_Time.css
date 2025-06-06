@@ -164,6 +164,30 @@ button:hover {
     margin: 1rem 0;
 }
 
+/* Learn Section Styles */
+#learn-analog-clock {
+    display: block;
+    margin: 0 auto;
+    background: white;
+    border-radius: 50%;
+}
+
+#learn-analog-clock line {
+    transition: transform 0.3s cubic-bezier(.4,2,.6,1);
+}
+
+#random-time-btn, #listen-time-btn {
+    background: var(--accent-color);
+    color: var(--text-color);
+    font-weight: bold;
+    margin: 0.5rem 0.5rem 0.5rem 0;
+}
+
+#random-time-btn:hover, #listen-time-btn:hover {
+    background: var(--secondary-color);
+    color: #fff;
+}
+
 /* Animations */
 @keyframes bounce {
     0%, 100% {

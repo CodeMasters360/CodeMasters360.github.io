@@ -68,14 +68,17 @@ function addEventListeners() {
         button.addEventListener('click', () => showScreen('main'));
     });
 
-    // Speak Time Button
-    document.getElementById('speak-time').addEventListener('click', speakCurrentTime);
+    // Remove: Speak Time Button (no longer exists in HTML)
+    // let speakBtn = document.getElementById('speak-time');
+    // if (speakBtn) speakBtn.addEventListener('click', speakCurrentTime);
 }
 
 // Clock Functions
 function updateAnalogClock(hours, minutes) {
+    // Only update if quiz analog clock exists
     const hourHand = document.querySelector('.hour-hand');
     const minuteHand = document.querySelector('.minute-hand');
+    if (!hourHand || !minuteHand) return;
 
     const hourDegrees = (hours % 12) * 30 + minutes * 0.5;
     const minuteDegrees = minutes * 6;
@@ -92,37 +95,142 @@ function updateDigitalClock(hours, minutes) {
     digitalMinutes.textContent = minutes.toString().padStart(2, '0');
 }
 
+// --- New: SVG Analog Clock Setup for Learn Mode ---
+function drawClockMarks() {
+    const marks = [];
+    for (let i = 1; i <= 12; i++) {
+        const angle = (i - 3) * (Math.PI * 2) / 12;
+        const x = 100 + Math.cos(angle) * 75;
+        const y = 100 + Math.sin(angle) * 75;
+        marks.push(`<text x="${x}" y="${y+5}" text-anchor="middle" font-size="16" fill="#333">${i}</text>`);
+    }
+    document.getElementById('clock-marks').innerHTML = marks.join('');
+}
+drawClockMarks();
+
+// --- New: Update SVG Analog Clock Hands ---
+function updateLearnAnalogClock(hours, minutes) {
+    // Calculate angles
+    const hourAngle = ((hours % 12) + minutes / 60) * 30; // 360/12 = 30
+    const minuteAngle = minutes * 6; // 360/60 = 6
+
+    // Set transforms
+    document.getElementById('learn-hour-hand').setAttribute(
+        'transform',
+        `rotate(${hourAngle} 100 100)`
+    );
+    document.getElementById('learn-minute-hand').setAttribute(
+        'transform',
+        `rotate(${minuteAngle} 100 100)`
+    );
+}
+
+// --- New: Random Time Generation for Learn Mode ---
+function randomLearnTime() {
+    // Multiples of 5 for minutes
+    const hours = Math.floor(Math.random() * 12) + 1;
+    const minutes = Math.floor(Math.random() * 12) * 5;
+    return { hours, minutes };
+}
+
+// --- New: Map Time to Audio Sequence ---
+function getTimeAudioSequence(hours, minutes) {
+    // Convert to 12-hour format
+    let h = hours % 12 || 12;
+    let m = minutes;
+
+    // Helper for file names
+    // For hours: use en_num_01.mp3 ... en_num_12.mp3
+    const hourFile = `audio/en_num_${h.toString().padStart(2, '0')}.mp3`;
+    // For minutes: use en_num_00.mp3 ... en_num_60.mp3
+    const minuteFile = `audio/en_num_${m.toString().padStart(2, '0')}.mp3`;
+
+    // Special cases
+    if (m === 0) {
+        // "Three o_clock"
+        return [hourFile, 'audio/o_clock.mp3'];
+    }
+    if (m === 15) {
+        // "Quarter past four"
+        return ['audio/quarter.mp3', 'audio/past.mp3', hourFile];
+    }
+    if (m === 30) {
+        // "Half past five"
+        return ['audio/half.mp3', 'audio/past.mp3', hourFile];
+    }
+    if (m === 45) {
+        // "Quarter to (next hour)"
+        let nextHour = ((h % 12) + 1);
+        let nextHourFile = `audio/en_num_${nextHour.toString().padStart(2, '0')}.mp3`;
+        return ['audio/quarter.mp3', 'audio/to.mp3', nextHourFile];
+    }
+    if (m < 30) {
+        // "Twenty past two"
+        return [minuteFile, 'audio/past.mp3', hourFile];
+    }
+    if (m > 30) {
+        // "Ten to nine"
+        let nextHour = ((h % 12) + 1);
+        let toMinutes = 60 - m;
+        let toMinuteFile = `audio/en_num_${toMinutes.toString().padStart(2, '0')}.mp3`;
+        let nextHourFile = `audio/en_num_${nextHour.toString().padStart(2, '0')}.mp3`;
+        return [
+            toMinuteFile,
+            'audio/to.mp3',
+            nextHourFile
+        ];
+    }
+    return [hourFile, minuteFile];
+}
+
+// --- New: Play Audio Files in Sequence ---
+function playAudioSequence(files) {
+    let idx = 0;
+    function playNext() {
+        if (idx >= files.length) return;
+        const src = files[idx];
+        const audio = new Audio(src);
+        audio.onended = playNext;
+        audio.onerror = function() {
+            // Log missing file and show link in console
+            console.warn('Cannot open audio file:', src);
+            console.info('Audio file link:', window.location.origin + '/' + src);
+            idx++;
+            playNext();
+        };
+        audio.play().catch(err => {
+            // Catch promise rejections (e.g., file missing)
+            console.warn('Audio play failed:', src, err);
+            console.info('Audio file link:', window.location.origin + '/' + src);
+            idx++;
+            playNext();
+        });
+        idx++;
+    }
+    playNext();
+}
+
 // Learn Mode
 function initializeLearnMode() {
-    const clockFace = document.querySelector('.clock-face');
-    let isDragging = false;
-    let currentHand = null;
+    // Remove old DOM-based clock drag logic for Learn mode
+    // and only set up SVG clock and buttons
 
-    clockFace.addEventListener('mousedown', startDragging);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', stopDragging);
-
-    function startDragging(e) {
-        isDragging = true;
-        const rect = clockFace.getBoundingClientRect();
-        const handType = determineHand(e, rect);
-        if (handType) {
-            currentHand = handType;
-            updateTimeFromMouse(e, rect);
-        }
-    }
-
-    function drag(e) {
-        if (isDragging && currentHand) {
-            const rect = clockFace.getBoundingClientRect();
-            updateTimeFromMouse(e, rect);
-        }
-    }
-
-    function stopDragging() {
-        isDragging = false;
-        currentHand = null;
-    }
+    // Set up event listeners for new buttons (safe to re-assign)
+    document.getElementById('random-time-btn').onclick = () => {
+        const { hours, minutes } = randomLearnTime();
+        gameState.currentTime = { hours, minutes };
+        updateLearnAnalogClock(hours, minutes);
+        updateDigitalClock(hours, minutes);
+    };
+    document.getElementById('listen-time-btn').onclick = () => {
+        const { hours, minutes } = gameState.currentTime;
+        const audioSeq = getTimeAudioSequence(hours, minutes);
+        playAudioSequence(audioSeq);
+    };
+    // Set initial time
+    const { hours, minutes } = gameState.currentTime;
+    updateLearnAnalogClock(hours, minutes);
+    updateDigitalClock(hours, minutes);
 }
 
 // Quiz Mode
@@ -135,10 +243,11 @@ function startQuiz() {
 function generateQuestion() {
     const hours = Math.floor(Math.random() * 12) + 1;
     const minutes = Math.floor(Math.random() * 4) * 15; // 0, 15, 30, 45
-    
+
     gameState.currentTime = { hours, minutes };
+    // Only update quiz clock (not SVG)
     updateAnalogClock(hours, minutes);
-    
+
     generateOptions(hours, minutes);
 }
 
@@ -215,12 +324,24 @@ function checkAnswer(selectedAnswer) {
         updateScoreDisplays();
         feedbackMessage.textContent = 'Correct! Well done!';
         feedbackMessage.className = 'feedback-message correct';
-        sounds.correct.play();
+        // Add error handling for sound
+        if (sounds.correct) {
+            sounds.correct.play().catch(err => {
+                console.warn('Cannot play correct sound:', sounds.correct.src, err);
+                console.info('Sound file link:', sounds.correct.src);
+            });
+        }
         setTimeout(generateQuestion, 1500);
     } else {
         feedbackMessage.textContent = `Wrong! The correct time is ${correctAnswer}`;
         feedbackMessage.className = 'feedback-message wrong';
-        sounds.wrong.play();
+        // Add error handling for sound
+        if (sounds.wrong) {
+            sounds.wrong.play().catch(err => {
+                console.warn('Cannot play wrong sound:', sounds.wrong.src, err);
+                console.info('Sound file link:', sounds.wrong.src);
+            });
+        }
         setTimeout(() => {
             feedbackMessage.textContent = '';
             generateQuestion();

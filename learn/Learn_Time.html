@@ -14,13 +14,28 @@
         <button class="start-btn">Start Learning!</button>
     </div>
 
+    <!-- Name Modal -->
+    <div id="name-modal" class="screen" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.95); z-index:1000; justify-content:center; align-items:center;">
+        <div style="background:white; padding:2rem; border-radius:20px; box-shadow:0 0 20px rgba(0,0,0,0.1); text-align:center;">
+            <h2>Welcome!</h2>
+            <p>Please enter your name:</p>
+            <input type="text" id="user-name-input" style="font-size:1.2rem; padding:0.5rem; border-radius:10px; border:1px solid #ccc;">
+            <br><br>
+            <button id="save-name-btn">Start</button>
+        </div>
+    </div>
+
     <!-- Main Menu -->
     <div class="screen hidden" id="main-menu">
         <div class="score-display">Score: <span id="total-score">0</span></div>
         <div class="menu-buttons">
             <button data-screen="learn">Learn Time</button>
-            <button data-screen="quiz">Play Quiz</button>
+            <button data-screen="quiz">Quiz: Text Choice</button>
+            <button data-screen="quiz-audio-text">Quiz: Audio to Text</button>
+            <button data-screen="quiz-audio-clock">Quiz: Audio to Clock</button>
             <button data-screen="scores">View Scores</button>
+            <button data-screen="about">About</button>
+            <button data-screen="howto">How to Use</button>
         </div>
     </div>
 
@@ -28,23 +43,29 @@
     <div class="screen hidden" id="learn-screen">
         <div class="clock-container">
             <div class="analog-clock">
-                <div class="clock-face">
-                    <div class="hand hour-hand"></div>
-                    <div class="hand minute-hand"></div>
-                    <div class="center-dot"></div>
-                </div>
+                <!-- SVG-based analog clock for easier manipulation -->
+                <svg id="learn-analog-clock" width="200" height="200" viewBox="0 0 200 200">
+                    <circle cx="100" cy="100" r="90" stroke="#4CAF50" stroke-width="10" fill="white"/>
+                    <!-- Hour marks -->
+                    <g id="clock-marks"></g>
+                    <!-- Hands -->
+                    <line id="learn-hour-hand" x1="100" y1="100" x2="100" y2="55" stroke="#333" stroke-width="8" stroke-linecap="round"/>
+                    <line id="learn-minute-hand" x1="100" y1="100" x2="100" y2="35" stroke="#2196F3" stroke-width="4" stroke-linecap="round"/>
+                    <circle cx="100" cy="100" r="6" fill="#333"/>
+                </svg>
             </div>
             <div class="digital-clock">
                 <span class="hours">12</span>:<span class="minutes">00</span>
             </div>
         </div>
         <div class="controls">
-            <button id="speak-time">Say Time</button>
+            <button id="random-time-btn">What time is it?</button>
+            <button id="listen-time-btn">🔊 Listen</button>
             <button class="back-btn">Back to Menu</button>
         </div>
     </div>
 
-    <!-- Quiz Section -->
+    <!-- Quiz Section: Text Choice (default) -->
     <div class="screen hidden" id="quiz-screen">
         <div class="score-display">Current Score: <span id="quiz-score">0</span></div>
         <div class="quiz-clock"></div>
@@ -53,10 +74,64 @@
         <button class="back-btn">Back to Menu</button>
     </div>
 
+    <!-- Quiz Section: Audio to Text -->
+    <div class="screen hidden" id="quiz-audio-text-screen">
+        <div class="score-display">Current Score: <span id="quiz-audio-text-score">0</span></div>
+        <div>
+            <button id="play-quiz-audio-btn">🔊 Play Audio</button>
+        </div>
+        <div class="quiz-options"></div>
+        <div class="feedback-message"></div>
+        <button class="back-btn">Back to Menu</button>
+    </div>
+
+    <!-- Quiz Section: Audio to Clock -->
+    <div class="screen hidden" id="quiz-audio-clock-screen">
+        <div class="score-display">Current Score: <span id="quiz-audio-clock-score">0</span></div>
+        <div>
+            <button id="play-quiz-audio-clock-btn">🔊 Play Audio</button>
+        </div>
+        <div class="quiz-clock-options" style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;"></div>
+        <div class="feedback-message"></div>
+        <button class="back-btn">Back to Menu</button>
+    </div>
+
     <!-- Scores Section -->
     <div class="screen hidden" id="scores-screen">
         <h2>Your Scores</h2>
+        <div id="user-name-display"></div>
         <div class="scores-list"></div>
+        <canvas id="progress-chart" width="400" height="200" style="margin:2rem auto;display:block;"></canvas>
+        <button class="back-btn">Back to Menu</button>
+    </div>
+
+    <!-- About Section -->
+    <div class="screen hidden" id="about-screen">
+        <h2>About</h2>
+        <p>This program was created by CodeMasters360 for teaching children how to read clocks in English.</p>
+        <ul>
+            <li>Design & Development: CodeMasters360 Team</li>
+            <li>Audio: Child-friendly, clear English recordings</li>
+            <li>Contact: <a href="mailto:codemasters360@gmail.com">codemasters360@gmail.com</a></li>
+        </ul>
+        <button class="back-btn">Back to Menu</button>
+    </div>
+
+    <!-- How to Use Section -->
+    <div class="screen hidden" id="howto-screen">
+        <h2>How to Use</h2>
+        <ol style="text-align:left; max-width:500px; margin:0 auto;">
+            <li>Enter your name when prompted. Your progress will be saved.</li>
+            <li>Use <b>Learn Time</b> to practice reading clocks and hearing the correct pronunciation.</li>
+            <li>Try the <b>Quiz</b> modes:
+                <ul>
+                    <li><b>Text Choice:</b> Read the clock and select the correct time from the options.</li>
+                    <li><b>Audio to Text:</b> Listen to the time and select the correct text answer.</li>
+                    <li><b>Audio to Clock:</b> Listen to the time and select the correct clock image.</li>
+                </ul>
+            </li>
+            <li>View your daily progress and scores in the <b>Scores</b> section.</li>
+        </ol>
         <button class="back-btn">Back to Menu</button>
     </div>
 
