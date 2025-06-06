@@ -10,32 +10,34 @@
     <!-- Welcome Screen -->
     <div class="screen" id="welcome-screen">
         <h1>Clock Kids</h1>
-        <h2>Learning Time in English</h2>
+        <h2 id="welcome-user-name">Learning Time in English</h2>
         <button class="start-btn">Start Learning!</button>
     </div>
 
     <!-- Name Modal -->
-    <div id="name-modal" class="screen" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.95); z-index:1000; justify-content:center; align-items:center;">
-        <div style="background:white; padding:2rem; border-radius:20px; box-shadow:0 0 20px rgba(0,0,0,0.1); text-align:center;">
+    <div id="name-modal" class="screen modal" style="display:none;">
+        <div class="modal-content">
             <h2>Welcome!</h2>
-            <p>Please enter your name:</p>
-            <input type="text" id="user-name-input" style="font-size:1.2rem; padding:0.5rem; border-radius:10px; border:1px solid #ccc;">
-            <br><br>
-            <button id="save-name-btn">Start</button>
+            <p>Please enter your name to save your progress:</p>
+            <input type="text" id="user-name-input" placeholder="Your Name">
+            <button id="save-name-btn">Save & Start</button>
         </div>
     </div>
 
     <!-- Main Menu -->
     <div class="screen hidden" id="main-menu">
-        <div class="score-display">Score: <span id="total-score">0</span></div>
+        <div class="user-info">
+            Logged in as: <span id="display-user-name">Guest</span>
+        </div>
+        <div class="score-display">Total Score: <span id="total-score">0</span></div>
         <div class="menu-buttons">
             <button data-screen="learn">Learn Time</button>
-            <button data-screen="quiz">Quiz: Text Choice</button>
+            <button data-screen="quiz">Quiz: Clock to Text</button>
             <button data-screen="quiz-audio-text">Quiz: Audio to Text</button>
             <button data-screen="quiz-audio-clock">Quiz: Audio to Clock</button>
-            <button data-screen="scores">View Scores</button>
-            <button data-screen="about">About</button>
+            <button data-screen="scores">View Scores & Progress</button>
             <button data-screen="howto">How to Use</button>
+            <button data-screen="about">About Creators</button>
         </div>
     </div>
 
@@ -67,70 +69,87 @@
 
     <!-- Quiz Section: Text Choice (default) -->
     <div class="screen hidden" id="quiz-screen">
-        <div class="score-display">Current Score: <span id="quiz-score">0</span></div>
-        <div class="quiz-clock"></div>
-        <div class="quiz-options"></div>
+        <div class="score-display">Current Quiz Score: <span id="quiz-score">0</span></div>
+        <h3 id="quiz-question-text">What time is it?</h3>
+        <div class="quiz-clock-display">
+            <!-- Analog clock will be rendered here by JS -->
+        </div>
+        <div class="quiz-options">
+            <!-- Options will be rendered here by JS -->
+        </div>
         <div class="feedback-message"></div>
         <button class="back-btn">Back to Menu</button>
     </div>
 
     <!-- Quiz Section: Audio to Text -->
     <div class="screen hidden" id="quiz-audio-text-screen">
-        <div class="score-display">Current Score: <span id="quiz-audio-text-score">0</span></div>
-        <div>
-            <button id="play-quiz-audio-btn">🔊 Play Audio</button>
+        <div class="score-display">Current Quiz Score: <span id="quiz-audio-text-score">0</span></div>
+        <h3>Listen to the time and choose the correct option:</h3>
+        <button id="play-quiz-audio-btn">🔊 Play Time</button>
+        <div class="quiz-options" id="quiz-audio-text-options">
+            <!-- Text options will be rendered here by JS -->
         </div>
-        <div class="quiz-options"></div>
-        <div class="feedback-message"></div>
+        <div class="feedback-message" id="feedback-audio-text"></div>
         <button class="back-btn">Back to Menu</button>
     </div>
 
     <!-- Quiz Section: Audio to Clock -->
     <div class="screen hidden" id="quiz-audio-clock-screen">
-        <div class="score-display">Current Score: <span id="quiz-audio-clock-score">0</span></div>
-        <div>
-            <button id="play-quiz-audio-clock-btn">🔊 Play Audio</button>
+        <div class="score-display">Current Quiz Score: <span id="quiz-audio-clock-score">0</span></div>
+        <h3>Listen to the time and choose the correct clock:</h3>
+        <button id="play-quiz-audio-clock-btn">🔊 Play Time</button>
+        <div class="quiz-clock-options" id="quiz-audio-clock-options">
+            <!-- Clock options will be rendered here by JS -->
         </div>
-        <div class="quiz-clock-options" style="display:flex; justify-content:center; gap:2rem; flex-wrap:wrap;"></div>
-        <div class="feedback-message"></div>
+        <div class="feedback-message" id="feedback-audio-clock"></div>
         <button class="back-btn">Back to Menu</button>
     </div>
 
     <!-- Scores Section -->
     <div class="screen hidden" id="scores-screen">
-        <h2>Your Scores</h2>
-        <div id="user-name-display"></div>
-        <div class="scores-list"></div>
-        <canvas id="progress-chart" width="400" height="200" style="margin:2rem auto;display:block;"></canvas>
+        <h2>Your Scores & Progress</h2>
+        <div id="user-name-scores-display" style="margin-bottom: 1rem; font-size: 1.2rem;">User: <span id="scores-user-name-value"></span></div>
+        <div class="scores-list">
+            <!-- High scores will be listed here -->
+        </div>
+        <h3>Daily Progress</h3>
+        <canvas id="progress-chart" width="400" height="200"></canvas>
         <button class="back-btn">Back to Menu</button>
     </div>
 
     <!-- About Section -->
     <div class="screen hidden" id="about-screen">
-        <h2>About</h2>
-        <p>This program was created by CodeMasters360 for teaching children how to read clocks in English.</p>
+        <h2>About the Creators</h2>
+        <p>This "Clock Kids" application was lovingly crafted by <strong>CodeMasters360</strong>.</p>
+        <p>Our mission is to make learning fun and accessible for children everywhere.</p>
+        <p>Team Members:</p>
         <ul>
-            <li>Design & Development: CodeMasters360 Team</li>
-            <li>Audio: Child-friendly, clear English recordings</li>
-            <li>Contact: <a href="mailto:codemasters360@gmail.com">codemasters360@gmail.com</a></li>
+            <li>Lead Developer: [Your Name/Team Lead Name]</li>
+            <li>UI/UX Designer: [Designer's Name]</li>
+            <li>Educational Consultant: [Consultant's Name]</li>
         </ul>
+        <p>We hope you enjoy learning to tell time with Clock Kids!</p>
         <button class="back-btn">Back to Menu</button>
     </div>
 
     <!-- How to Use Section -->
     <div class="screen hidden" id="howto-screen">
-        <h2>How to Use</h2>
-        <ol style="text-align:left; max-width:500px; margin:0 auto;">
-            <li>Enter your name when prompted. Your progress will be saved.</li>
-            <li>Use <b>Learn Time</b> to practice reading clocks and hearing the correct pronunciation.</li>
-            <li>Try the <b>Quiz</b> modes:
+        <h2>How to Use Clock Kids</h2>
+        <ol style="text-align: left; margin: 1rem auto; max-width: 90%;">
+            <li><strong>Welcome:</strong> When you first start, you'll be asked for your name. This helps save your scores and progress.</li>
+            <li><strong>Main Menu:</strong>
                 <ul>
-                    <li><b>Text Choice:</b> Read the clock and select the correct time from the options.</li>
-                    <li><b>Audio to Text:</b> Listen to the time and select the correct text answer.</li>
-                    <li><b>Audio to Clock:</b> Listen to the time and select the correct clock image.</li>
+                    <li><strong>Learn Time:</strong> Practice reading an analog and digital clock. Click "What time is it?" for a new time and "Listen" to hear it spoken.</li>
+                    <li><strong>Quiz: Clock to Text:</strong> Look at the analog clock and choose the correct time from four text options.</li>
+                    <li><strong>Quiz: Audio to Text:</strong> Listen to a time being spoken, then choose the correct time from four text options.</li>
+                    <li><strong>Quiz: Audio to Clock:</strong> Listen to a time being spoken, then choose the correct clock face from four options.</li>
+                    <li><strong>View Scores & Progress:</strong> See your high scores and a chart of your daily points.</li>
+                    <li><strong>How to Use:</strong> You are here!</li>
+                    <li><strong>About Creators:</strong> Learn more about the team behind Clock Kids.</li>
                 </ul>
             </li>
-            <li>View your daily progress and scores in the <b>Scores</b> section.</li>
+            <li><strong>Scoring:</strong> You earn 10 points for each correct answer in the quizzes. Your total score and daily progress are tracked.</li>
+            <li><strong>Sound:</strong> Ensure your device's sound is on to hear the time in learning mode and audio quizzes.</li>
         </ol>
         <button class="back-btn">Back to Menu</button>
     </div>
@@ -140,6 +159,7 @@
     <audio id="wrong-sound" src="assets/wrong.mp3"></audio>
     <audio id="reward-sound" src="assets/reward.mp3"></audio>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Added Chart.js library -->
     <script src="Learn_Time.js"></script>
 </body>
 </html>
