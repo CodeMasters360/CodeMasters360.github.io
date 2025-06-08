@@ -75,8 +75,20 @@ function updateLearnAnalogClock(hours, minutes) {
     const minuteHand = document.getElementById('learn-minute-hand');
 
     if (hourHand && minuteHand) {
-        const hourDeg = (hours % 12 + minutes / 60) * 30 - 90; // -90 to offset initial SVG rotation
-        const minuteDeg = (minutes * 6) - 90; // -90 to offset
+        // Use seconds = 0 for static time display
+        const seconds = 0;
+        
+        // Calculate angles using the precise algorithm
+        // Minute Hand Angle: (M + S/60) × 6
+        const minuteDeg = (minutes + seconds/60) * 6;
+        
+        // Hour Hand Angle: (H(mod12) + M/60 + S/3600) × 30
+        const hourMod12 = hours % 12;
+        const hourDeg = (hourMod12 + minutes/60 + seconds/3600) * 30;
+
+        // Debug output
+        console.log(`🕐 Learn Clock Update - Time: ${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`);
+        console.log(`   H(mod12): ${hourMod12}, Hour Angle: ${hourDeg}°, Minute Angle: ${minuteDeg}°`);
 
         hourHand.setAttribute('transform', `rotate(${hourDeg} 100 100)`);
         minuteHand.setAttribute('transform', `rotate(${minuteDeg} 100 100)`);
@@ -204,13 +216,25 @@ function generateListeningChallenge() {
 }
 
 function updateListeningClocks(times) {
+    console.log('🔊 Listening Clocks Update:');
     times.forEach((time, index) => {
         const hourHand = document.getElementById(`listening-hour-hand-${index}`);
         const minuteHand = document.getElementById(`listening-minute-hand-${index}`);
         
         if (hourHand && minuteHand) {
-            const hourDeg = (time.hours % 12 + time.minutes / 60) * 30 - 90;
-            const minuteDeg = (time.minutes * 6) - 90;
+            // Use seconds = 0 for static time display
+            const seconds = 0;
+            
+            // Calculate angles using the precise algorithm
+            // Minute Hand Angle: (M + S/60) × 6
+            const minuteDeg = (time.minutes + seconds/60) * 6;
+            
+            // Hour Hand Angle: (H(mod12) + M/60 + S/3600) × 30
+            const hourMod12 = time.hours % 12;
+            const hourDeg = (hourMod12 + time.minutes/60 + seconds/3600) * 30;
+            
+            // Debug output for each clock
+            console.log(`   Clock ${index}: ${time.hours}:${time.minutes.toString().padStart(2, '0')} -> H(mod12): ${hourMod12}, Hour: ${hourDeg}°, Minute: ${minuteDeg}°`);
             
             hourHand.setAttribute('transform', `rotate(${hourDeg} 50 50)`);
             minuteHand.setAttribute('transform', `rotate(${minuteDeg} 50 50)`);

@@ -82,16 +82,31 @@ function drawQuizClockMarks() {
 }
 
 function updateQuizClocks(times) {
+    console.log('🔊 Quiz Audio to Clock Update:');
     times.forEach((time, index) => {
         setTimeout(() => {
             const hourHand = document.getElementById(`quiz-hour-hand-${index}`);
             const minuteHand = document.getElementById(`quiz-minute-hand-${index}`);
             if (hourHand && minuteHand) {
-                const hourDeg = (time.hours % 12 + time.minutes / 60) * 30 - 90;
-                const minuteDeg = (time.minutes * 6) - 90;
+                // Use seconds = 0 for static time display
+                const seconds = 0;
+                
+                // Calculate angles using the precise algorithm
+                // Minute Hand Angle: (M + S/60) × 6
+                const minuteDeg = (time.minutes + seconds/60) * 6;
+                
+                // Hour Hand Angle: (H(mod12) + M/60 + S/3600) × 30
+                const hourMod12 = time.hours % 12;
+                const hourDeg = (hourMod12 + time.minutes/60 + seconds/3600) * 30;
+
+                // Debug output for each quiz clock
+                console.log(`   Quiz Clock ${index}: ${time.hours}:${time.minutes.toString().padStart(2, '0')} -> H(mod12): ${hourMod12}, Hour: ${hourDeg}°, Minute: ${minuteDeg}°`);
+
                 hourHand.setAttribute('transform', `rotate(${hourDeg} 50 50)`);
                 minuteHand.setAttribute('transform', `rotate(${minuteDeg} 50 50)`);
-            } else { console.warn(`Quiz clock hands not found for index ${index}`); }
+            } else { 
+                console.warn(`Quiz clock hands not found for index ${index}`); 
+            }
         }, 100);
     });
 }

@@ -25,6 +25,7 @@ const cancelDeleteActionBtn = document.getElementById('cancel-delete-action-btn'
 
 
 let currentLoginUsername = ''; // To store username for login attempt
+let selectedAvatar = 'boy'; // Moved to module scope
 
 function setupPinEventListeners(containerId) {
     const container = document.getElementById(containerId);
@@ -107,6 +108,32 @@ export function initializeAccountSystem() {
     // Initialize PIN input behaviors
     setupPinEventListeners('login-pin-container');
     setupPinEventListeners('register-pin-container');
+
+    // Add avatar selection (👦 or 👩) to registration.
+    const registerAvatarContainer = document.createElement('div');
+    registerAvatarContainer.className = 'avatar-select-container';
+    registerAvatarContainer.innerHTML = `
+        <label class="avatar-select-label">Choose your avatar:</label>
+        <div class="avatar-select-options">
+            <span class="avatar-option" data-avatar="boy" title="Boy" tabindex="0">👦</span>
+            <span class="avatar-option" data-avatar="girl" title="Girl" tabindex="0">👩</span>
+        </div>
+    `;
+    document.getElementById('register-section').insertBefore(registerAvatarContainer, document.getElementById('register-pin-container'));
+
+    // Avatar selection logic
+    const avatarOptions = registerAvatarContainer.querySelectorAll('.avatar-option');
+    avatarOptions.forEach(opt => {
+        opt.onclick = () => {
+            avatarOptions.forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            selectedAvatar = opt.dataset.avatar;
+        };
+        opt.onkeydown = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') opt.click();
+        };
+    });
+    avatarOptions[0].classList.add('selected');
 }
 
 export function displayLoginModal() {
@@ -135,13 +162,21 @@ export function renderUserList() {
     if (allUsers.length === 0) {
         userListDiv.innerHTML = '<p>No users registered yet. Please register.</p>';
     } else {
+        // Use a grid container for user cards
+        const grid = document.createElement('div');
+        grid.className = 'user-list-grid';
         allUsers.forEach(user => {
-            const item = document.createElement('div');
-            item.className = 'user-list-item';
-            item.textContent = user.username;
-            item.addEventListener('click', () => selectUserForLogin(user.username));
-            userListDiv.appendChild(item);
+            const card = document.createElement('div');
+            card.className = 'user-list-card';
+            const avatar = user.avatar === '👩' ? '👩' : '👦';
+            card.innerHTML = `
+                <div class="user-avatar">${avatar}</div>
+                <div class="user-list-username">${user.username}</div>
+            `;
+            card.addEventListener('click', () => selectUserForLogin(user.username));
+            grid.appendChild(card);
         });
+        userListDiv.appendChild(grid);
     }
 }
 
@@ -221,16 +256,17 @@ function handleRegistrationAttempt() {
         setLoginError('Username must be between 3 and 20 characters.');
         return;
     }
-
     const existingUser = findUser(username);
     if (existingUser) {
         setLoginError('Username already taken. Please choose another.');
         return;
     }
-
+    // --- Avatar selection ---
+    const avatar = selectedAvatar === 'girl' ? '👩' : '👦';
     const newUser = {
         username,
         pin,
+        avatar,
         totalScore: 0,
         dailyProgress: {},
         highScores: []
@@ -239,7 +275,7 @@ function handleRegistrationAttempt() {
     setCurrentUser(newUser);
     updateUserNameDisplays();
     hideLoginModal();
-    showMainScreen('main-menu'); // Corrected from 'main_menu'
+    showMainScreen('main-menu');
     clearLoginError();
 }
 
@@ -247,13 +283,21 @@ export function displayAccountPanel() {
     const user = getCurrentUser();
     if (user) {
         accountUsernameSpan.textContent = user.username;
+        // Show avatar in account panel if possible
+        let avatarSpan = document.getElementById('account-avatar');
+        if (!avatarSpan) {
+            avatarSpan = document.createElement('span');
+            avatarSpan.id = 'account-avatar';
+            avatarSpan.style.fontSize = '2rem';
+            avatarSpan.style.marginRight = '0.5rem';
+            accountUsernameSpan.parentNode.insertBefore(avatarSpan, accountUsernameSpan);
+        }
+        avatarSpan.textContent = user.avatar === '👩' ? '👩' : '👦';
         accountPanel.classList.remove('hidden');
-        // Ensure other modals are hidden
         if (loginModal) loginModal.classList.add('hidden');
         if (deleteConfirmModal) deleteConfirmModal.classList.add('hidden');
     } else {
-        // Should not happen if called correctly, but handle defensively
-        displayLoginModal(); // Or show an error
+        displayLoginModal();
     }
 }
 

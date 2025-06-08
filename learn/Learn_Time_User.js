@@ -48,11 +48,12 @@ export function setCurrentUser(user) {
         gameState.totalScore = user.totalScore || 0;
         gameState.dailyProgress = user.dailyProgress || {};
         gameState.highScores = user.highScores || [];
+        gameState.avatar = user.avatar || '👦';
         localStorage.setItem('clockKidsLastUser', user.username);
     } else {
         gameState.userName = '';
         gameState.totalScore = 0;
-        // Clear other user-specific gameState properties if necessary
+        gameState.avatar = '👦';
         localStorage.removeItem('clockKidsLastUser');
     }
     saveUserData(); // Save current user's data (or clear it if null)
@@ -94,7 +95,7 @@ export function saveUserData() {
         // Find the user in the main 'users' array and update it
         const userIndex = users.findIndex(u => u.username === currentUser.username);
         if (userIndex !== -1) {
-            users[userIndex] = { ...users[userIndex], ...currentUser, totalScore: gameState.totalScore, dailyProgress: gameState.dailyProgress, highScores: gameState.highScores };
+            users[userIndex] = { ...users[userIndex], ...currentUser, totalScore: gameState.totalScore, dailyProgress: gameState.dailyProgress, highScores: gameState.highScores, avatar: currentUser.avatar || gameState.avatar || '👦' };
         }
         saveUsers(); // Save the entire users array with updated current user data
         // Example: if (currentUser.preferences) localStorage.setItem(`user_${currentUser.username}_prefs`, JSON.stringify(currentUser.preferences));

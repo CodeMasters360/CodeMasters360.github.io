@@ -5,8 +5,19 @@ function updateQuizAnalogClock(hours, minutes) {
     const minuteHand = document.getElementById('quiz-minute-hand');
 
     if (hourHand && minuteHand) {
-        const hourDeg = (hours % 12 + minutes / 60) * 30 - 90;
-        const minuteDeg = (minutes * 6) - 90;
+        // Use seconds = 0 for static time display
+        const seconds = 0;
+        
+        // Calculate angles using the precise algorithm
+        // Minute Hand Angle: (M + S/60) × 6
+        const minuteDeg = (minutes + seconds/60) * 6;
+        
+        // Hour Hand Angle: (H(mod12) + M/60 + S/3600) × 30
+        const hourMod12 = hours % 12;
+        const hourDeg = (hourMod12 + minutes/60 + seconds/3600) * 30;
+
+        // Debug output
+        console.log(`🕐 Quiz Clock Update - Time: ${hours}:${minutes.toString().padStart(2, '0')} -> H(mod12): ${hourMod12}, Hour: ${hourDeg}°, Minute: ${minuteDeg}°`);
 
         hourHand.setAttribute('transform', `rotate(${hourDeg} 100 100)`);
         minuteHand.setAttribute('transform', `rotate(${minuteDeg} 100 100)`);
