@@ -152,7 +152,7 @@ button:hover {
 .analog-clock {
     width: 300px;
     height: 300px;
-    border: 10px solid var(--primary-color);
+    border: none; /* Changed from 10px solid var(--primary-color) */
     border-radius: 50%;
     position: relative;
     background: #fff;
@@ -364,9 +364,7 @@ button:hover {
     min-height: auto; /* Auto height */
 }
 
-#account-panel, #login-modal { /* No .modal class needed here as it's already on the element */
-    /* display: flex !important; */ /* This will be controlled by adding/removing .hidden */
-}
+/* Removed empty ruleset for #account-panel, #login-modal */
 #account-panel .modal-content button {
     margin: 0.5rem 0.2rem;
     width: 90%;
@@ -429,6 +427,7 @@ button:hover {
 
 /* Remove spinners from number inputs in Firefox */
 .pin-digit[type=number] {
+    appearance: textfield;
     -moz-appearance: textfield;
 }
 

@@ -26,6 +26,8 @@ function updateQuizAnalogClock(hours, minutes) {
 
 function checkAnswer(isCorrect, quizScreenSelector) {
     const feedbackEl = document.querySelector(`${quizScreenSelector} .feedback-message`);
+    const optionsContainer = document.querySelector(`${quizScreenSelector} .quiz-options`);
+    
     if (isCorrect) {
         if (feedbackEl) {
             feedbackEl.textContent = "Correct!";
@@ -33,21 +35,56 @@ function checkAnswer(isCorrect, quizScreenSelector) {
         }
         addScore(10);
         playSound('correct');
-        if (quizScreenSelector === '#quiz-screen') { // Specific to this quiz type
+        if (quizScreenSelector === '#quiz-screen') {
             const scoreEl = document.getElementById('quiz-score');
             if (scoreEl) scoreEl.textContent = gameState.quizScore;
         }
+        setTimeout(() => {
+            if (feedbackEl) feedbackEl.textContent = "";
+            generateQuestion();
+        }, 1500);
     } else {
         if (feedbackEl) {
             feedbackEl.textContent = "Try again!";
             feedbackEl.className = 'feedback-message wrong';
         }
         playSound('wrong');
+        
+        // Highlight the correct answer for 1 second
+        if (optionsContainer) {
+            const buttons = optionsContainer.querySelectorAll('button');
+            buttons.forEach(button => {
+                button.style.pointerEvents = 'none'; // Disable clicking during feedback
+                // Find and highlight the correct answer
+                if (button.textContent === gameState.correctAnswer) {
+                    button.style.backgroundColor = '#4CAF50';
+                    button.style.color = 'white';
+                    button.style.border = '3px solid #2E7D32';
+                    button.style.transform = 'scale(1.05)';
+                    button.style.boxShadow = '0 4px 12px rgba(76, 175, 80, 0.4)';
+                }
+            });
+            
+            setTimeout(() => {
+                // Reset button styles and re-enable clicking
+                buttons.forEach(button => {
+                    button.style.pointerEvents = 'auto';
+                    button.style.backgroundColor = '';
+                    button.style.color = '';
+                    button.style.border = '';
+                    button.style.transform = '';
+                    button.style.boxShadow = '';
+                });
+                if (feedbackEl) feedbackEl.textContent = "";
+                generateQuestion();
+            }, 2500); // Show correct answer for 1 second, then wait before next question
+        } else {
+            setTimeout(() => {
+                if (feedbackEl) feedbackEl.textContent = "";
+                generateQuestion();
+            }, 1500);
+        }
     }
-    setTimeout(() => {
-        if (feedbackEl) feedbackEl.textContent = "";
-        generateQuestion(); // Next question for this quiz type
-    }, 1500);
 }
 
 export function generateQuestion() {
@@ -82,6 +119,8 @@ export function generateQuestion() {
         };
 
         const correctTimeText = formatTimeToString(hours, minutes);
+        gameState.correctAnswer = correctTimeText; // Store correct answer for highlighting
+        
         let distractors = [];
         while (distractors.length < 3) {
             const distractorH = Math.floor(Math.random() * 12) + 1;

@@ -1,32 +1,96 @@
 import { gameState } from './Learn_Time.js'; // Import gameState
 
+// Global audio management
+let currentAudioSequence = [];
+let isPlayingAudio = false;
+
+export function stopAllAudio() {
+    currentAudioSequence.forEach(audio => {
+        if (audio && !audio.paused) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    });
+    currentAudioSequence = [];
+    isPlayingAudio = false;
+    hideAudioIndicator();
+}
+
+function showAudioIndicator(message = "🔊 Playing time...") {
+    let indicator = document.getElementById('audio-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'audio-indicator';
+        indicator.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            z-index: 1001;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: pulse 1.5s infinite;
+        `;
+        document.body.appendChild(indicator);
+    }
+    indicator.textContent = message;
+    indicator.style.display = 'block';
+}
+
+function hideAudioIndicator() {
+    const indicator = document.getElementById('audio-indicator');
+    if (indicator) {
+        indicator.style.display = 'none';
+    }
+}
+
 export function initializeLearnMode() {
+    stopAllAudio(); // Stop any previous audio when entering learn mode
+    
+    // Generate a random time when entering learn mode
+    const { hours, minutes } = randomLearnTime();
+    gameState.currentTime = { hours, minutes };
+    
     const randomTimeBtn = document.getElementById('random-time-btn');
     const listenTimeBtn = document.getElementById('listen-time-btn');
 
     if (randomTimeBtn) {
         randomTimeBtn.onclick = () => {
-            const { hours, minutes } = randomLearnTime(); // Assuming randomLearnTime is defined elsewhere or needs to be
+            stopAllAudio(); // Stop any playing audio
+            const { hours, minutes } = randomLearnTime();
             gameState.currentTime = { hours, minutes };
-            updateLearnAnalogClock(hours, minutes); // Assuming updateLearnAnalogClock is defined
-            updateLearnDigitalClock(hours, minutes); // Assuming updateLearnDigitalClock is defined
+            updateLearnAnalogClock(hours, minutes);
+            updateLearnDigitalClock(hours, minutes);
         };
     }
     if (listenTimeBtn) {
         listenTimeBtn.onclick = () => {
+            stopAllAudio(); // Stop any previous audio
             const { hours, minutes } = gameState.currentTime;
             const audioSeq = getTimeAudioSequence(hours, minutes);
             playAudioSequence(audioSeq);
-            console.log(`Speak: ${hours}:${minutes}`); // Keep as fallback
         };
     }
-    // Initialize with a default or current time
-    const { hours, minutes } = gameState.currentTime;
+    
+    // Draw clock marks only once when initializing
+    drawClockMarks();
+    
+    // Update clocks with the new random time
     updateLearnAnalogClock(hours, minutes);
     updateLearnDigitalClock(hours, minutes);
 }
 
 export function drawClockMarks() {
+    const clockMarksElement = document.getElementById('clock-marks');
+    if (!clockMarksElement) return;
+    
+    // Clear existing marks to prevent duplicates
+    clockMarksElement.innerHTML = '';
+    
     const marks = [];
     for (let i = 1; i <= 12; i++) {
         const angle = (i - 3) * (Math.PI * 2) / 12;
@@ -34,7 +98,7 @@ export function drawClockMarks() {
         const y = 100 + Math.sin(angle) * 75;
         marks.push(`<text x="${x}" y="${y+5}" text-anchor="middle" font-size="16" fill="#333">${i}</text>`);
     }
-    document.getElementById('clock-marks').innerHTML = marks.join('');
+    clockMarksElement.innerHTML = marks.join('');
 }
 
 export function drawQuizClockMarks() {
@@ -109,16 +173,18 @@ function getTimeAudioSequence(hours, minutes) {
     // Helper to get correct file name for numbers
     function numFile(n) { return `audio/en_num_${String(n).padStart(2, '0')}.mp3`; }
 
-    audioFiles.push(numFile(hours));
-
+    // Fixed audio sequence order - say the time parts in the correct order
     if (minutes === 0) {
+        audioFiles.push(numFile(hours));
         audioFiles.push('audio/o_clock.mp3');
     } else if (minutes === 15) {
         audioFiles.push('audio/quarter.mp3');
         audioFiles.push('audio/past.mp3');
+        audioFiles.push(numFile(hours));
     } else if (minutes === 30) {
         audioFiles.push('audio/half.mp3');
         audioFiles.push('audio/past.mp3');
+        audioFiles.push(numFile(hours));
     } else if (minutes === 45) {
         audioFiles.push('audio/quarter.mp3');
         audioFiles.push('audio/to.mp3');
@@ -126,22 +192,42 @@ function getTimeAudioSequence(hours, minutes) {
     } else if (minutes < 30) {
         audioFiles.push(numFile(minutes));
         audioFiles.push('audio/past.mp3');
+        audioFiles.push(numFile(hours));
     } else {
         const minutesToNext = 60 - minutes;
         audioFiles.push(numFile(minutesToNext));
         audioFiles.push('audio/to.mp3');
         audioFiles.push(numFile(hours === 12 ? 1 : hours + 1));
     }
+
+    // Debug logging for audio sequence
+    console.log(`🔊 Learn Mode Audio Sequence for ${hours}:${minutes.toString().padStart(2, '0')}:`);
+    console.log(`   Files to play in order: [${audioFiles.join(', ')}]`);
+    
     return audioFiles;
 }
 
 function playAudioSequence(audioFiles) {
+    if (isPlayingAudio) {
+        stopAllAudio();
+    }
+    
+    isPlayingAudio = true;
+    showAudioIndicator();
+    currentAudioSequence = [];
     let currentIndex = 0;
     
     function playNext() {
-        if (currentIndex >= audioFiles.length) return;
+        if (currentIndex >= audioFiles.length) {
+            isPlayingAudio = false;
+            hideAudioIndicator();
+            currentAudioSequence = [];
+            return;
+        }
         
         const audio = new Audio(audioFiles[currentIndex]);
+        currentAudioSequence.push(audio);
+        
         audio.onended = () => {
             currentIndex++;
             setTimeout(playNext, 200); // Small delay between audio files

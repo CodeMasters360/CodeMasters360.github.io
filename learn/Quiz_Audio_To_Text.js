@@ -1,5 +1,53 @@
 import { gameState, addScore, playSound } from './Learn_Time.js';
 
+// Global audio management
+let currentAudioSequence = [];
+let isPlayingAudio = false;
+
+function stopAllAudio() {
+    currentAudioSequence.forEach(audio => {
+        if (audio && !audio.paused) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    });
+    currentAudioSequence = [];
+    isPlayingAudio = false;
+    hideAudioIndicator();
+}
+
+function showAudioIndicator(message = "🔊 Playing time...") {
+    let indicator = document.getElementById('audio-indicator');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.id = 'audio-indicator';
+        indicator.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 16px;
+            z-index: 1001;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: pulse 1.5s infinite;
+        `;
+        document.body.appendChild(indicator);
+    }
+    indicator.textContent = message;
+    indicator.style.display = 'block';
+}
+
+function hideAudioIndicator() {
+    const indicator = document.getElementById('audio-indicator');
+    if (indicator) {
+        indicator.style.display = 'none';
+    }
+}
+
 function generateRandomTime() {
     const hours = Math.floor(Math.random() * 12) + 1;
     let minutes;
@@ -17,25 +65,82 @@ function generateRandomTime() {
 function getQuizTimeAudioSequence(hours, minutes) {
     const audioFiles = [];
     function numFile(n) { return `audio/en_num_${String(n).padStart(2, '0')}.mp3`; }
-    audioFiles.push(numFile(hours));
-    if (minutes === 0) audioFiles.push('audio/o_clock.mp3');
-    else if (minutes === 15) { audioFiles.push('audio/quarter.mp3'); audioFiles.push('audio/past.mp3'); }
-    else if (minutes === 30) { audioFiles.push('audio/half.mp3'); audioFiles.push('audio/past.mp3'); }
-    else if (minutes === 45) { audioFiles.push('audio/quarter.mp3'); audioFiles.push('audio/to.mp3'); audioFiles.push(numFile(hours === 12 ? 1 : hours + 1)); }
-    else if (minutes < 30) { audioFiles.push(numFile(minutes)); audioFiles.push('audio/past.mp3'); }
-    else { const mtn = 60 - minutes; audioFiles.push(numFile(mtn)); audioFiles.push('audio/to.mp3'); audioFiles.push(numFile(hours === 12 ? 1 : hours + 1)); }
+    
+    // Fixed audio sequence order
+    if (minutes === 0) {
+        audioFiles.push(numFile(hours));
+        audioFiles.push('audio/o_clock.mp3');
+    } else if (minutes === 15) {
+        audioFiles.push('audio/quarter.mp3');
+        audioFiles.push('audio/past.mp3');
+        audioFiles.push(numFile(hours));
+    } else if (minutes === 30) {
+        audioFiles.push('audio/half.mp3');
+        audioFiles.push('audio/past.mp3');
+        audioFiles.push(numFile(hours));
+    } else if (minutes === 45) {
+        audioFiles.push('audio/quarter.mp3');
+        audioFiles.push('audio/to.mp3');
+        audioFiles.push(numFile(hours === 12 ? 1 : hours + 1));
+    } else if (minutes < 30) {
+        audioFiles.push(numFile(minutes));
+        audioFiles.push('audio/past.mp3');
+        audioFiles.push(numFile(hours));
+    } else {
+        const mtn = 60 - minutes;
+        audioFiles.push(numFile(mtn));
+        audioFiles.push('audio/to.mp3');
+        audioFiles.push(numFile(hours === 12 ? 1 : hours + 1));
+    }
+
+    // Debug logging for audio sequence
+    console.log(`🔊 Audio to Text Quiz Audio Sequence for ${hours}:${minutes.toString().padStart(2, '0')}:`);
+    console.log(`   Files to play in order: [${audioFiles.join(', ')}]`);
+    
     return audioFiles;
 }
 
 function playQuizAudioSequence(audioFiles) {
-    let currentIndex = 0;
-    function playNext() {
-        if (currentIndex >= audioFiles.length) return;
-        const audio = new Audio(audioFiles[currentIndex]);
-        audio.onended = () => { currentIndex++; setTimeout(playNext, 200); };
-        audio.onerror = () => { console.warn(`Could not load quiz audio: ${audioFiles[currentIndex]}`); currentIndex++; setTimeout(playNext, 200); };
-        audio.play().catch(e => { console.warn(`Could not play quiz audio: ${audioFiles[currentIndex]}`, e); currentIndex++; setTimeout(playNext, 200); });
+    if (isPlayingAudio) {
+        stopAllAudio();
     }
+
+    isPlayingAudio = true;
+    showAudioIndicator("🔊 Playing time...");
+    currentAudioSequence = [];
+    let currentIndex = 0;
+
+    // Log audio sequence every time play is triggered
+    console.log(`🔊 Audio to Text Quiz Audio Sequence:`);
+    console.log(`   Files to play in order: [${audioFiles.join(', ')}]`);
+
+    function playNext() {
+        if (currentIndex >= audioFiles.length) {
+            isPlayingAudio = false;
+            hideAudioIndicator();
+            currentAudioSequence = [];
+            return;
+        }
+
+        const audio = new Audio(audioFiles[currentIndex]);
+        currentAudioSequence.push(audio);
+
+        audio.onended = () => {
+            currentIndex++;
+            setTimeout(playNext, 200);
+        };
+        audio.onerror = () => {
+            console.warn(`Could not load quiz audio: ${audioFiles[currentIndex]}`);
+            currentIndex++;
+            setTimeout(playNext, 200);
+        };
+        audio.play().catch(e => {
+            console.warn(`Could not play quiz audio: ${audioFiles[currentIndex]}`, e);
+            currentIndex++;
+            setTimeout(playNext, 200);
+        });
+    }
+
     playNext();
 }
 
@@ -87,6 +192,8 @@ function checkAudioTextAnswer(isCorrect) {
 
 export function generateAudioTextQuestion() {
     console.log("Generating new question for Audio to Text Quiz...");
+    stopAllAudio(); // Stop any previous audio
+    
     gameState.quizScore = gameState.quizScore;
     const scoreEl = document.getElementById('quiz-audio-text-score');
     if (scoreEl) scoreEl.textContent = gameState.quizScore;
@@ -119,4 +226,13 @@ export function generateAudioTextQuestion() {
         const audioSeq = getQuizTimeAudioSequence(correctTime.hours, correctTime.minutes);
         playQuizAudioSequence(audioSeq);
     }, 500);
+
+    // Add play button handler for replaying audio and showing indicator
+    const playBtn = document.getElementById('play-quiz-audio-btn');
+    if (playBtn) {
+        playBtn.onclick = () => {
+            const audioSeq = getQuizTimeAudioSequence(correctTime.hours, correctTime.minutes);
+            playQuizAudioSequence(audioSeq);
+        };
+    }
 }

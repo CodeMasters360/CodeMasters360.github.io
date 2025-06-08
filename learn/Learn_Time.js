@@ -1,8 +1,31 @@
 // Import modules
-import { initializeLearnMode, drawClockMarks, drawQuizClockMarks } from './Learn_Time_Learn.js';
+import { initializeLearnMode, drawClockMarks, drawQuizClockMarks, stopAllAudio as stopLearnAudio } from './Learn_Time_Learn.js';
 import { startQuiz, startQuizAudioText, startQuizAudioClock } from './Learn_Time_Quiz.js';
 import { loadUsers, getCurrentUser, getUserName, saveUserData, getUsers } from './Learn_Time_User.js';
 import { initializeAccountSystem, displayLoginModal, hideLoginModal, displayAccountPanel, renderUserList } from './Learn_Time_Account.js';
+
+// Global function to stop all audio across modules
+function stopAllAudio() {
+    // Stop learn mode audio
+    if (typeof stopLearnAudio === 'function') {
+        stopLearnAudio();
+    }
+    
+    // Stop quiz audio - we'll need to export these functions from quiz modules
+    // For now, let's try to stop any audio elements
+    const audioIndicator = document.getElementById('audio-indicator');
+    if (audioIndicator) {
+        audioIndicator.style.display = 'none';
+    }
+    
+    // Stop any playing HTML5 audio elements
+    document.querySelectorAll('audio').forEach(audio => {
+        if (!audio.paused) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    });
+}
 
 // Game State
 export const gameState = {
@@ -47,7 +70,7 @@ const sounds = {
 // Initialize Game
 document.addEventListener('DOMContentLoaded', () => {
     loadUsers(); // Loads all users and attempts to set current user from localStorage
-    drawClockMarks(); // For learn screen
+    // Remove this line: drawClockMarks(); // For learn screen - this causes duplicates
     drawQuizClockMarks(); // For quiz screen
     
     initializeAccountSystem(); // Sets up listeners for login/account modal buttons
@@ -106,6 +129,8 @@ function setupGlobalEventListeners() {
 
 // Screen Management
 export function showMainScreen(screenId) {
+    stopAllAudio(); // Stop all audio when changing screens
+    
     Object.values(mainScreenElements).forEach(screenEl => {
         if (screenEl) screenEl.classList.add('hidden');
     });
