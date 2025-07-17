@@ -1,4 +1,4 @@
-// calendar-logic.js (نسخه نهایی با اصلاح ساختار سلول)
+// calendar-logic.js (نسخه نهایی)
 
 const PersianCalendar = {
     currentYear: 1404,
@@ -6,20 +6,39 @@ const PersianCalendar = {
 
     init: function () {
         const today = new Date();
-        const todayJalaali = CalendarConverter.jalaali.toJalaali(today.getFullYear(), today.getMonth() + 1, today.getDate());
+        const todayJalaali = this.getJalaliFromGregorian(today.getFullYear(), today.getMonth() + 1, today.getDate());
         this.currentYear = todayJalaali.jy;
         this.currentMonth = todayJalaali.jm;
+
+        this.populateMonthSelector();
 
         document.getElementById('prev-month').addEventListener('click', () => this.changeMonth(-1));
         document.getElementById('next-month').addEventListener('click', () => this.changeMonth(1));
         document.getElementById('goto-today').addEventListener('click', () => this.gotoToday());
+        document.getElementById('month-selector').addEventListener('change', (e) => this.selectMonth(e));
 
+        this.renderCalendar(this.currentYear, this.currentMonth);
+    },
+
+    populateMonthSelector: function() {
+        const selector = document.getElementById('month-selector');
+        selector.innerHTML = '';
+        CalendarData.JALALI_MONTHS.forEach((monthName, index) => {
+            const option = document.createElement('option');
+            option.value = index + 1;
+            option.textContent = monthName;
+            selector.appendChild(option);
+        });
+    },
+
+    selectMonth: function(event) {
+        this.currentMonth = parseInt(event.target.value);
         this.renderCalendar(this.currentYear, this.currentMonth);
     },
 
     gotoToday: function() {
         const today = new Date();
-        const todayJalaali = CalendarConverter.jalaali.toJalaali(today.getFullYear(), today.getMonth() + 1, today.getDate());
+        const todayJalaali = this.getJalaliFromGregorian(today.getFullYear(), today.getMonth() + 1, today.getDate());
         this.currentYear = todayJalaali.jy;
         this.currentMonth = todayJalaali.jm;
         this.renderCalendar(this.currentYear, this.currentMonth);
@@ -27,75 +46,109 @@ const PersianCalendar = {
 
     changeMonth: function (direction) {
         this.currentMonth += direction;
-        if (this.currentMonth > 12) { this.currentMonth = 1; this.currentYear++; }
-        if (this.currentMonth < 1) { this.currentMonth = 12; this.currentYear--; }
+        if (this.currentMonth > 12) {
+            this.currentMonth = 1;
+            this.currentYear++;
+        }
+        if (this.currentMonth < 1) {
+            this.currentMonth = 12;
+            this.currentYear--;
+        }
         this.renderCalendar(this.currentYear, this.currentMonth);
     },
 
     padZero: (num) => (num < 10 ? '0' + num : String(num)),
+    
+    getJalaliFromGregorian(gy, gm, gd) {
+        const dateStr = `${gy}-${this.padZero(gm)}-${this.padZero(gd)}`;
+        for (const key in masterData1404) {
+            if (masterData1404[key].g === dateStr) {
+                const [jy, jm, jd] = key.split('-').map(Number);
+                return { jy, jm, jd };
+            }
+        }
+        return { jy: 1404, jm: 1, jd: 1 };
+    },
 
     renderCalendar: function (year, month) {
         const gridEl = document.getElementById('calendar-grid');
         const eventsEl = document.getElementById('events-container');
-        const monthYearDisplayEl = document.getElementById('month-year-display');
+        const monthSelector = document.getElementById('month-selector');
+        const yearDisplay = document.getElementById('year-display');
+        const subtitleDisplay = document.getElementById('subtitle-display');
 
         gridEl.style.opacity = 0;
         eventsEl.style.opacity = 0;
 
         setTimeout(() => {
-            const daysInMonth = CalendarConverter.jalaali.jalaaliMonthLength(year, month);
-            const startOfMonthGregorian = CalendarConverter.jalaali.toGregorian(year, month, 1);
-            const endOfMonthGregorian = CalendarConverter.jalaali.toGregorian(year, month, daysInMonth);
-            const startOfMonthHijri = CalendarConverter.hijri.toHijri(startOfMonthGregorian.gy, startOfMonthGregorian.gm - 1, startOfMonthGregorian.gd);
-            const endOfMonthHijri = CalendarConverter.hijri.toHijri(endOfMonthGregorian.gy, endOfMonthGregorian.gm - 1, endOfMonthGregorian.gd);
+            monthSelector.value = month;
+            yearDisplay.textContent = year;
 
-            const jalaaliMonthName = CalendarData.JALALI_MONTHS[month - 1];
-            const gregorianMonthNameStart = CalendarData.GREGORIAN_MONTHS[startOfMonthGregorian.gm - 1];
-            const gregorianMonthNameEnd = CalendarData.GREGORIAN_MONTHS[endOfMonthGregorian.gm - 1];
+            const daysInMonth = Object.keys(masterData1404).filter(k => k.startsWith(`${year}-${this.padZero(month)}`)).length;
+            if (daysInMonth === 0) {
+                gridEl.innerHTML = "<p>اطلاعات این ماه موجود نیست.</p>";
+                eventsEl.innerHTML = "";
+                subtitleDisplay.textContent = "";
+                gridEl.style.opacity = 1;
+                return;
+            }
+
+            const startOfMonthKey = `${year}-${this.padZero(month)}-01`;
+            const endOfMonthKey = `${year}-${this.padZero(month)}-${this.padZero(daysInMonth)}`;
+            const startOfMonthData = masterData1404[startOfMonthKey];
+            const endOfMonthData = masterData1404[endOfMonthKey];
+            
+            const [startGy, startGm] = startOfMonthData.g.split('-').map(Number);
+            const [endGy, endGm] = endOfMonthData.g.split('-').map(Number);
+            const [startHy, startHm] = startOfMonthData.h.split('-').map(Number);
+            const [endHy, endHm] = endOfMonthData.h.split('-').map(Number);
+
+            const gregorianMonthNameStart = CalendarData.GREGORIAN_MONTHS[startGm - 1];
+            const gregorianMonthNameEnd = CalendarData.GREGORIAN_MONTHS[endGm - 1];
             const gregorianSubtitle = gregorianMonthNameStart === gregorianMonthNameEnd ? gregorianMonthNameStart : `${gregorianMonthNameStart} - ${gregorianMonthNameEnd}`;
-
-            const hijriMonthNameStart = CalendarData.HIJRI_MONTHS[startOfMonthHijri.hm - 1];
-            const hijriMonthNameEnd = CalendarData.HIJRI_MONTHS[endOfMonthHijri.hm - 1];
+            
+            const hijriMonthNameStart = CalendarData.HIJRI_MONTHS[startHm];
+            const hijriMonthNameEnd = CalendarData.HIJRI_MONTHS[endHm];
             const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthNameStart : `${hijriMonthNameStart} - ${hijriMonthNameEnd}`;
             
-            monthYearDisplayEl.innerHTML = `
-                ${jalaaliMonthName} ${year}
-                <span class="subtitle">${gregorianSubtitle} ${startOfMonthGregorian.gy} | ${hijriSubtitle} ${startOfMonthHijri.hy}</span>
-            `;
+            subtitleDisplay.textContent = `${gregorianSubtitle} ${startGy} | ${hijriSubtitle} ${startHy}`;
 
-            const firstDayOfWeek = new Date(startOfMonthGregorian.gy, startOfMonthGregorian.gm - 1, startOfMonthGregorian.gd).getDay();
+            const firstDayDate = new Date(startOfMonthData.g);
+            const firstDayOfWeek = firstDayDate.getDay();
             const emptyCellsAtStart = (firstDayOfWeek + 1) % 7;
             
             let tableHtml = `<table>
-    <thead>
-        <tr>
-            <th><div class="weekday-modern">شنبه</div><div class="weekday-ancient">کیوان شید</div></th>
-            <th><div class="weekday-modern">یک‌شنبه</div><div class="weekday-ancient">مهرشید</div></th>
-            <th><div class="weekday-modern">دوشنبه</div><div class="weekday-ancient">مهشید</div></th>
-            <th><div class="weekday-modern">سه‌شنبه</div><div class="weekday-ancient">بهرام شید</div></th>
-            <th><div class="weekday-modern">چهارشنبه</div><div class="weekday-ancient">تیرشید</div></th>
-            <th><div class="weekday-modern">پنج‌شنبه</div><div class="weekday-ancient">اورمزد شید</div></th>
-            <th><div class="weekday-modern">آدینه</div><div class="weekday-ancient">ناهیدشید</div></th>
-        </tr>
-    </thead>
-    <tbody>`;
+                <thead>
+                    <tr>
+                        <th><div class="weekday-modern">شنبه</div><div class="weekday-ancient">کیوان شید</div></th>
+                        <th><div class="weekday-modern">یک‌شنبه</div><div class="weekday-ancient">مهرشید</div></th>
+                        <th><div class="weekday-modern">دوشنبه</div><div class="weekday-ancient">مهشید</div></th>
+                        <th><div class="weekday-modern">سه‌شنبه</div><div class="weekday-ancient">بهرام شید</div></th>
+                        <th><div class="weekday-modern">چهارشنبه</div><div class="weekday-ancient">تیرشید</div></th>
+                        <th><div class="weekday-modern">پنج‌شنبه</div><div class="weekday-ancient">هرمزشید</div></th>
+                        <th><div class="weekday-modern">جمعه</div><div class="weekday-ancient">ناهیدشید</div></th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
             let row = "<tr>";
             for (let i = 0; i < emptyCellsAtStart; i++) { row += "<td></td>"; }
 
             let monthEvents = [];
-            const today = new Date();
-            const todayJalaali = CalendarConverter.jalaali.toJalaali(today.getFullYear(), today.getMonth() + 1, today.getDate());
+            const todayJalaali = this.getJalaliFromGregorian(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
             const todayKey = `${todayJalaali.jy}-${this.padZero(todayJalaali.jm)}-${this.padZero(todayJalaali.jd)}`;
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const key = `${year}-${this.padZero(month)}-${this.padZero(day)}`;
-                const gregorianDate = CalendarConverter.jalaali.toGregorian(year, month, day);
-                const hijriDate = CalendarConverter.hijri.toHijri(gregorianDate.gy, gregorianDate.gm - 1, gregorianDate.gd);
+                const dayData = masterData1404[key];
+                if (!dayData) continue;
 
-                const miladiStr = `${gregorianDate.gy}-${this.padZero(gregorianDate.gm)}-${this.padZero(gregorianDate.gd)} (${CalendarData.GREGORIAN_MONTHS[gregorianDate.gm - 1].substring(0, 3)})`;
-                const hijriStr = `${hijriDate.hy}/${this.padZero(hijriDate.hm)}/${this.padZero(hijriDate.hd)} (${CalendarData.HIJRI_MONTHS[hijriDate.hm - 1]})`;
-
-                const dayOfWeek = new Date(gregorianDate.gy, gregorianDate.gm - 1, gregorianDate.gd).getDay();
+                const [gy, gm, gd] = dayData.g.split('-').map(Number);
+                const [hy, hm, hd] = dayData.h.split('-').map(Number);
+                const miladiStr = `${dayData.g} (${CalendarData.GREGORIAN_MONTHS[gm - 1].substring(0, 3)})`;
+                const hijriStr = `${hy}/${this.padZero(hm)}/${this.padZero(hd)} (${CalendarData.HIJRI_MONTHS[hm]})`;
+                
+                const dayOfWeek = new Date(dayData.g).getDay();
                 const isHoliday = publicHolidays.has(key);
 
                 let classes = "";
@@ -107,7 +160,6 @@ const PersianCalendar = {
                     monthEvents.push({ day: day, text: events[key].join('، '), isHoliday: isHoliday });
                 }
 
-                // === تغییر اصلی اینجاست: اضافه کردن div.cell-content ===
                 row += `<td class="${classes.trim()}">
                             <div class="cell-content">
                                 <div class="day-number">${day}</div>
@@ -117,7 +169,6 @@ const PersianCalendar = {
                                 </div>
                             </div>
                         </td>`;
-                // ===============================================
 
                 if (dayOfWeek === 5) {
                     tableHtml += row + "</tr>";
@@ -126,8 +177,8 @@ const PersianCalendar = {
             }
 
             if (row !== "<tr>") {
-                const endOfMonthGregorian = CalendarConverter.jalaali.toGregorian(year, month, daysInMonth);
-                const lastDayOfWeek = new Date(endOfMonthGregorian.gy, endOfMonthGregorian.gm - 1, endOfMonthGregorian.gd).getDay();
+                const lastDayDate = new Date(endOfMonthData.g);
+                const lastDayOfWeek = lastDayDate.getDay();
                 const remainingCells = (5 - lastDayOfWeek + 7) % 7;
                 for (let i = 0; i < remainingCells; i++) { row += "<td></td>"; }
                 tableHtml += row + "</tr>";

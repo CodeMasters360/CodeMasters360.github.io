@@ -9,36 +9,32 @@
 
   <div class="calendar-wrapper">
     <div class="calendar-header">
-      <!-- دکمه قبلی (فلش به سمت راست) -->
       <button id="prev-month" class="nav-button">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
       </button>
       
       <div id="month-year-display-wrapper">
-        <div id="month-year-display"></div>
-        <!-- *** دکمه برو به امروز اضافه شد *** -->
+        <div class="month-selector-container">
+          <select id="month-selector"></select>
+          <span id="year-display"></span>
+        </div>
+        <div id="subtitle-display" class="subtitle"></div>
         <button id="goto-today" class="today-button">امروز</button>
       </div>
 
-      <!-- دکمه بعدی (فلش به سمت چپ) -->
       <button id="next-month" class="nav-button">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
       </button>
     </div>
     
     <div class="calendar-main-content">
-      <div id="calendar-grid">
-        <!-- جدول تقویم اینجا توسط جاوااسکریپت ساخته می‌شود -->
-      </div>
-      <div id="events-container">
-        <!-- لیست مناسبت‌ها اینجا توسط جاوااسکریپت ساخته می‌شود -->
-      </div>
+      <div id="calendar-grid"></div>
+      <div id="events-container"></div>
     </div>
   </div>
 
-  <!-- بارگذاری فایل‌های تفکیک شده -->
-  <script src="calendar-data.js"></script>
-  <script src="calendar-converter.js"></script>
+  <!-- بارگذاری فایل‌های داده و منطق -->
+  <script src="calendar-master-data.js"></script>
   <script src="events.js"></script>
   <script src="calendar-logic.js"></script>
 
