@@ -1,4 +1,4 @@
-/* style.css (نسخه نهایی) */
+/* style.css (نسخه نهایی با تغییرات ریسپانسیو) */
 
 @font-face {
   font-family: 'Vazirmatn';
@@ -301,126 +301,148 @@ tr:last-child td:last-child { border-bottom-left-radius: 8px; }
 /* === Responsive Adjustments for screens <= 400px === */
 @media screen and (max-width: 400px) {
   body {
-    padding: 10px; /* کاهش پدینگ کلی بدنه */
-    align-items: stretch; /* مطمئن شویم که محتوا در عرض کامل صفحه نمایش داده می‌شود */
+    padding: 5px; /* کاهش پدینگ کلی بدنه */
+    align-items: stretch;
   }
 
   .calendar-wrapper {
-    border-radius: 0; /* حذف border-radius برای نمایش لبه به لبه */
-    box-shadow: none; /* حذف سایه برای سادگی بیشتر */
+    border-radius: 0;
+    box-shadow: none;
   }
 
   .calendar-header {
-    padding: 15px 10px; /* کاهش پدینگ هدر */
+    padding: 10px 8px; /* کاهش پدینگ هدر */
   }
 
   #month-year-display-wrapper {
-    gap: 5px; /* کاهش فاصله بین عناصر */
+    gap: 3px; /* کاهش فاصله بین عناصر */
   }
 
   #month-selector {
-    font-size: 1em; /* کاهش اندازه فونت انتخابگر ماه */
-    padding: 6px 10px;
-    padding-left: 2rem; /* تنظیم مجدد پدینگ چپ به دلیل تغییر اندازه آیکون */
-    background-position: left 0.5rem center; /* تنظیم مجدد موقعیت آیکون */
-    background-size: 1em; /* کاهش اندازه آیکون فلش */
+    font-size: 0.9em; /* کاهش اندازه فونت انتخابگر ماه */
+    padding: 5px 8px;
+    padding-left: 1.8rem; /* تنظیم مجدد پدینگ چپ به دلیل تغییر اندازه آیکون */
+    background-position: left 0.4rem center; /* تنظیم مجدد موقعیت آیکون */
+    background-size: 0.9em; /* کاهش اندازه آیکون فلش */
   }
 
   #year-display {
-    font-size: 1.4em; /* کاهش اندازه فونت سال */
+    font-size: 1.2em; /* کاهش اندازه فونت سال */
   }
 
   .subtitle {
-    font-size: 0.7em; /* کاهش اندازه فونت زیرنویس */
-    min-height: unset; /* اجازه دادن به محتوا برای اشغال فضای لازم */
+    font-size: 0.65em; /* کاهش اندازه فونت زیرنویس */
+    min-height: unset;
+    text-align: center;
   }
 
   .today-button {
-    padding: 4px 12px; /* کاهش پدینگ دکمه امروز */
-    font-size: 0.8em; /* کاهش اندازه فونت دکمه امروز */
+    padding: 3px 10px; /* کاهش پدینگ دکمه امروز */
+    font-size: 0.75em; /* کاهش اندازه فونت دکمه امروز */
   }
 
   .nav-button {
-    width: 38px; /* کاهش عرض دکمه‌های ناوبری */
-    height: 38px; /* کاهش ارتفاع دکمه‌های ناوبری */
+    width: 32px; /* کاهش عرض دکمه‌های ناوبری */
+    height: 32px; /* کاهش ارتفاع دکمه‌های ناوبری */
   }
   .nav-button svg {
-    width: 20px; /* کاهش اندازه آیکون‌های SVG */
-    height: 20px;
+    width: 18px; /* کاهش اندازه آیکون‌های SVG */
+    height: 18px;
   }
 
   .calendar-main-content {
-    flex-direction: column; /* چیدمان ستونی برای شبکه‌ی تقویم و رویدادها */
-    padding: 15px; /* کاهش پدینگ کلی محتوای اصلی */
-    gap: 15px; /* کاهش فاصله بین بخش‌ها */
+    flex-direction: column;
+    padding: 10px; /* کاهش پدینگ کلی محتوای اصلی */
+    gap: 10px; /* کاهش فاصله بین بخش‌ها */
   }
 
   #calendar-grid,
   #events-container {
-    min-width: unset; /* حذف حداقل عرض برای انعطاف‌پذیری */
-    flex: none; /* حذف flex-grow/shrink برای نمایش کامل عرض */
-    width: 100%; /* اشغال عرض کامل */
+    min-width: unset;
+    flex: none;
+    width: 100%;
   }
 
-  /* تنظیمات جدول تقویم */
   table {
-    table-layout: fixed; /* کمک به نگه داشتن عرض ستون‌ها */
+    table-layout: fixed;
   }
 
   th {
-    padding: 8px 2px; /* کاهش پدینگ هدرهای روز هفته */
-    font-size: 0.8em; /* کاهش اندازه فونت هدر */
+    padding: 6px 1px; /* کاهش پدینگ هدرهای روز هفته */
+    font-size: 0.75em; /* کاهش اندازه فونت هدر */
   }
 
   .weekday-ancient {
-    display: none; /* پنهان کردن نام‌های باستانی روزهای هفته برای فضای بیشتر */
+    display: none;
   }
 
   td {
-    height: 90px; /* کاهش ارتفاع سلول‌های روز */
-    padding: 2px; /* کاهش پدینگ داخل سلول */
+    height: 80px; /* کاهش ارتفاع سلول‌های روز */
+    padding: 1px; /* کاهش پدینگ داخل سلول */
   }
 
   .cell-content {
-    padding: 5px; /* کاهش پدینگ محتوای داخلی سلول */
-    justify-content: flex-start; /* شروع محتوا از بالا */
+    padding: 4px; /* کاهش پدینگ محتوای داخلی سلول */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* شماره روز بالا، بقیه پایین */
+    align-items: flex-start; /* ترازبندی همه به چپ به جز شماره روز */
   }
 
   .day-number {
-    font-size: 1.4em; /* کاهش اندازه فونت شماره روز */
-    padding-left: 4px; /* کاهش پدینگ چپ */
-    margin-bottom: 5px; /* اضافه کردن فاصله بین شماره روز و اطلاعات تاریخ */
+    font-size: 1.3em; /* کاهش اندازه فونت شماره روز */
+    text-align: right; /* شماره روز به راست */
+    padding-right: 4px; /* اضافه کردن پدینگ راست */
+    width: 100%; /* برای اینکه text-align کار کند */
+    box-sizing: border-box; /* برای جلوگیری از افزایش عرض */
   }
 
   .today .day-number {
-    width: 28px; /* تنظیم اندازه دایره امروز */
-    height: 28px;
-    font-size: 1.1em; /* تنظیم فونت داخل دایره امروز */
+    width: 25px; /* تنظیم اندازه دایره امروز */
+    height: 25px;
+    font-size: 1em; /* تنظیم فونت داخل دایره امروز */
+    padding: 0; /* حذف پدینگ داخلی دایره */
+    line-height: 25px; /* هم‌تراز کردن متن در دایره */
+  }
+
+  .date-info-container {
+    text-align: left; /* اطلاعات تاریخ به چپ */
+    width: 100%; /* برای اینکه text-align کار کند */
+    margin-top: auto; /* برای بردن به پایین سلول */
   }
 
   .date-info {
     font-size: 9px !important; /* کاهش شدید اندازه فونت اطلاعات تاریخ */
-    line-height: 1.2; /* تنظیم فاصله خطی برای جلوگیری از همپوشانی */
-    white-space: normal; /* اجازه دادن به شکستن خط اگر محتوا طولانی بود */
+    line-height: 1.1; /* تنظیم فاصله خطی برای جلوگیری از همپوشانی */
+    white-space: nowrap; /* از شکستن خط جلوگیری شود */
+    overflow: hidden; /* مخفی کردن سرریز */
+    text-overflow: ellipsis; /* اضافه کردن سه نقطه */
+    direction: ltr; /* اطمینان از نمایش صحیح اعداد قبل از متن ماه */
   }
   
   /* رویدادها */
   #events-container {
-    border-right: none; /* حذف خط جداکننده سمت راست */
-    padding-right: 0; /* حذف پدینگ راست */
-    border-top: 1px solid var(--border-color); /* اضافه کردن خط جداکننده از بالا */
-    padding-top: 15px; /* اضافه کردن پدینگ بالا */
-    margin-top: 15px; /* اضافه کردن مارجین بالا */
-    max-height: unset; /* حذف محدودیت ارتفاع برای امکان اسکرول کامل */
+    border-right: none;
+    padding-right: 0;
+    border-top: 1px solid var(--border-color);
+    padding-top: 10px;
+    margin-top: 10px;
+    max-height: unset;
   }
   #events-container h3 {
-    font-size: 1.2em; /* کاهش اندازه فونت عنوان رویدادها */
+    font-size: 1.1em;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+  #events-container ul {
+    max-height: 250px; /* محدود کردن ارتفاع برای اسکرول مستقل */
+    overflow-y: auto;
   }
   #events-container li {
-    font-size: 0.8em; /* کاهش اندازه فونت آیتم‌های رویداد */
-    padding: 8px 5px; /* کاهش پدینگ آیتم‌های رویداد */
+    font-size: 0.75em;
+    padding: 6px 4px;
   }
   #events-container li strong {
-    margin-left: 5px; /* کاهش مارجین چپ */
+    margin-left: 4px;
   }
 }

@@ -1,8 +1,9 @@
-// calendar-logic.js (نسخه نهایی)
+// calendar-logic.js (نسخه نهایی با تغییرات ریسپانسیو)
 
 const PersianCalendar = {
     currentYear: 1404,
     currentMonth: 1,
+    MOBILE_BREAKPOINT: 400, // نقطه شکست برای فعالسازی فرمت موبایل
 
     init: function () {
         const today = new Date();
@@ -18,6 +19,13 @@ const PersianCalendar = {
         document.getElementById('month-selector').addEventListener('change', (e) => this.selectMonth(e));
 
         this.renderCalendar(this.currentYear, this.currentMonth);
+
+        // افزودن listener برای تشخیص تغییر اندازه صفحه
+        window.addEventListener('resize', () => {
+            // برای جلوگیری از فراخوانی مکرر هنگام تغییر سایز شدید، می‌توان از debounce استفاده کرد
+            // اما برای سادگی در اینجا مستقیماً فراخوانی می‌شود.
+            this.renderCalendar(this.currentYear, this.currentMonth);
+        });
     },
 
     populateMonthSelector: function() {
@@ -67,7 +75,11 @@ const PersianCalendar = {
                 return { jy, jm, jd };
             }
         }
-        return { jy: 1404, jm: 1, jd: 1 };
+        // Fallback for years outside masterData1404 range or if not found
+        // This part should ideally use a robust date conversion library if comprehensive range is needed.
+        // For 1404, the masterData should cover all dates.
+        const converter = CalendarConverter.jalaali.toJalaali(gy, gm, gd);
+        return { jy: converter.jy, jm: converter.jm, jd: converter.jd };
     },
 
     renderCalendar: function (year, month) {
@@ -101,24 +113,22 @@ const PersianCalendar = {
             const [startGy, startGm] = startOfMonthData.g.split('-').map(Number);
             const [endGy, endGm] = endOfMonthData.g.split('-').map(Number);
             const [startHy, startHm] = startOfMonthData.h.split('-').map(Number);
-            const [endHy, endHm] = endOfMonthData.h.split('-').map(Number);
-
+            // const [endHy, endHm] is not directly used for subtitle (only month)
+            
             const gregorianMonthNameStart = CalendarData.GREGORIAN_MONTHS[startGm - 1];
             const gregorianMonthNameEnd = CalendarData.GREGORIAN_MONTHS[endGm - 1];
             const gregorianSubtitle = gregorianMonthNameStart === gregorianMonthNameEnd ? gregorianMonthNameStart : `${gregorianMonthNameStart} - ${gregorianMonthNameEnd}`;
             
             const hijriMonthNameStart = CalendarData.HIJRI_MONTHS[startHm - 1];
-const hijriMonthNameEnd = CalendarData.HIJRI_MONTHS[endOfMonthData.h.split('-').map(Number)[1] - 1];
-// ===================================
-
-const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthNameStart : `${hijriMonthNameStart} - ${hijriMonthNameEnd}`;
+            const hijriMonthNameEnd = CalendarData.HIJRI_MONTHS[endOfMonthData.h.split('-').map(Number)[1] - 1];
+            const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthNameStart : `${hijriMonthNameStart} - ${hijriMonthNameEnd}`;
             
             subtitleDisplay.textContent = `${gregorianSubtitle} ${startGy} | ${hijriSubtitle} ${startHy}`;
 
             const firstDayDate = new Date(startOfMonthData.g);
             const firstDayOfWeek = firstDayDate.getDay();
-            const emptyCellsAtStart = (firstDayOfWeek + 1) % 7;
-            
+            const emptyCellsAtStart = (firstDayOfWeek + 1) % 7; // +1 because JS getDay() is 0 for Sunday, we want Saturday to be 0
+
             let tableHtml = `<table>
                 <thead>
                     <tr>
@@ -137,7 +147,8 @@ const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthName
             for (let i = 0; i < emptyCellsAtStart; i++) { row += "<td></td>"; }
 
             let monthEvents = [];
-            const todayJalaali = this.getJalaliFromGregorian(new Date().getFullYear(), new Date().getMonth() + 1, new Date().getDate());
+            const today = new Date();
+            const todayJalaali = this.getJalaliFromGregorian(today.getFullYear(), today.getMonth() + 1, today.getDate());
             const todayKey = `${todayJalaali.jy}-${this.padZero(todayJalaali.jm)}-${this.padZero(todayJalaali.jd)}`;
 
             for (let day = 1; day <= daysInMonth; day++) {
@@ -147,8 +158,22 @@ const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthName
 
                 const [gy, gm, gd] = dayData.g.split('-').map(Number);
                 const [hy, hm, hd] = dayData.h.split('-').map(Number);
-                const miladiStr = `${dayData.g} (${CalendarData.GREGORIAN_MONTHS[gm - 1].substring(0, 3)})`;
-                const hijriStr = `${hy}/${this.padZero(hm)}/${this.padZero(hd)} (${CalendarData.HIJRI_MONTHS[hm]})`;
+
+                let miladiStr;
+                let hijriStr;
+
+                if (window.innerWidth <= this.MOBILE_BREAKPOINT) {
+                    // فرمت کوتاه برای موبایل
+                    miladiStr = `${this.padZero(gm)}-${this.padZero(gd)}`; // 07-17
+                    // مطمئن شویم که CalendarData.HIJRI_MONTHS با فرمت 'صفر' است نه 'صفر'
+                    // همچنین نام ماه قمری را خلاصه می‌کنیم یا کامل نگه می‌داریم بسته به طول
+                    const hijriMonthShort = CalendarData.HIJRI_MONTHS[hm - 1]; // "صفر"
+                    hijriStr = `${hd} ${hijriMonthShort}`; // 21 صفر
+                } else {
+                    // فرمت کامل برای دسکتاپ
+                    miladiStr = `${dayData.g} (${CalendarData.GREGORIAN_MONTHS[gm - 1].substring(0, 3)})`;
+                    hijriStr = `${hy}/${this.padZero(hm)}/${this.padZero(hd)} (${CalendarData.HIJRI_MONTHS[hm - 1]})`;
+                }
                 
                 const dayOfWeek = new Date(dayData.g).getDay();
                 const isHoliday = publicHolidays.has(key);
@@ -172,16 +197,18 @@ const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthName
                             </div>
                         </td>`;
 
-                if (dayOfWeek === 5) {
+                if (dayOfWeek === 5) { // If it's Friday (day 5 in JS, assuming Saturday is 0 in table header)
                     tableHtml += row + "</tr>";
                     row = "<tr>";
                 }
             }
 
+            // Fill remaining cells of the last row
             if (row !== "<tr>") {
                 const lastDayDate = new Date(endOfMonthData.g);
                 const lastDayOfWeek = lastDayDate.getDay();
-                const remainingCells = (5 - lastDayOfWeek + 7) % 7;
+                // calculate remaining cells to fill the week (Saturday-Friday)
+                const remainingCells = (5 - lastDayOfWeek + 7) % 7; // (5 is Friday)
                 for (let i = 0; i < remainingCells; i++) { row += "<td></td>"; }
                 tableHtml += row + "</tr>";
             }
