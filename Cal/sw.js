@@ -1,6 +1,6 @@
 // sw.js (نسخه اصلاح شده با آیکن‌ها)
 
-const CACHE_NAME = 'persian-calendar-cache-v11';
+const CACHE_NAME = 'persian-calendar-cache-v12';
 const urlsToCache = [
   'calander2.html',
   'style2.css',
