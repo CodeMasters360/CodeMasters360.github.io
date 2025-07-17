@@ -2,7 +2,7 @@
 
 const CACHE_NAME = 'persian-calendar-cache-v3';
 const urlsToCache = [
-  '/', 
+  './', 
   'calander2.html',
   'style2.css',
   'calendar-logic.js',
