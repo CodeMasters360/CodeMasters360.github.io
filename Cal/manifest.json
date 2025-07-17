@@ -2,7 +2,7 @@
   "name": "تقویم ۱۴۰۴",
   "short_name": "تقویم",
   "description": "تقویم رسمی سال ۱۴۰۴ هجری شمسی با تمام مناسبت‌ها",
-  "start_url": "/calander.html",
+  "start_url": "/calander2.html",
   "display": "standalone",
   "background_color": "#f8f9fa",
   "theme_color": "#0056b3",
