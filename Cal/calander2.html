@@ -3,6 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>تقویم ۱۴۰۴</title>
+  
+  <!-- === تغییرات جدید برای PWA === -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0056b3"/>
+  <link rel="manifest" href="manifest.json">
+  <!-- ============================== -->
+
   <link rel="stylesheet" href="./style2.css">
 </head>
 <body>
@@ -33,10 +40,13 @@
     </div>
   </div>
 
-  <!-- بارگذاری فایل‌های داده و منطق -->
+  <!-- ترتیب صحیح بارگذاری: داده‌ها اول، سپس منطق -->
   <script src="calendar-master-data.js"></script>
   <script src="events.js"></script>
   <script src="calendar-logic.js"></script>
+  
+  <!-- === اسکریپت جدید برای ثبت سرویس ورکر === -->
+  <script src="app.js"></script>
 
 </body>
 </html>
