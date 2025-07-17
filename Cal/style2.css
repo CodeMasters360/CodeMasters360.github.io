@@ -1,4 +1,4 @@
-/* style.css (نسخه نهایی و مدرن) */
+/* style.css (نسخه نهایی با نام‌های باستانی هفته) */
 
 @font-face {
   font-family: 'Vazirmatn';
@@ -11,13 +11,14 @@
   --primary-color: #0056b3;
   --secondary-color: #007bff;
   --text-color: #333;
-  --light-text-color: #6c757d; /* کمی تیره‌تر برای خوانایی بهتر */
+  --light-text-color: #6c757d;
   --border-color: #e9ecef;
   --bg-color: #f8f9fa;
   --friday-bg: #fff0f6;
   --holiday-bg: #ffebee;
-  --holiday-color: #d32f2f; /* کمی پررنگ‌تر */
+  --holiday-color: #d32f2f;
   --today-highlight: #007bff;
+  --today-bg: #e0f7ff;
   --white-color: #ffffff;
 }
 
@@ -36,7 +37,7 @@ body {
 
 .calendar-wrapper {
   width: 100%;
-  max-width: 1300px; /* کمی بزرگتر برای فضای بیشتر */
+  max-width: 1300px;
   background-color: var(--white-color);
   border-radius: 16px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
@@ -50,6 +51,13 @@ body {
   padding: 20px 25px;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: var(--white-color);
+}
+
+#month-year-display-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
 }
 
 #month-year-display {
@@ -67,12 +75,30 @@ body {
   letter-spacing: 0.5px;
 }
 
+.today-button {
+  background-color: rgba(255, 255, 255, 0.9);
+  color: var(--primary-color);
+  border: none;
+  border-radius: 20px;
+  padding: 5px 15px;
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 0.9em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.today-button:hover {
+  background-color: var(--white-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
 .nav-button {
   background: transparent;
   border: 2px solid rgba(255, 255, 255, 0.5);
   color: var(--white-color);
   border-radius: 50%;
-  width: 44px; /* کمی بزرگتر */
+  width: 44px;
   height: 44px;
   display: flex;
   justify-content: center;
@@ -90,50 +116,67 @@ body {
 
 .calendar-main-content {
   display: flex;
-  flex-wrap: wrap; /* برای واکنش‌گرایی بهتر در آینده */
+  flex-wrap: wrap;
   padding: 25px;
   gap: 25px;
 }
 
 #calendar-grid {
   flex: 3;
-  min-width: 600px; /* حداقل عرض برای جدول */
+  min-width: 600px;
   transition: opacity 0.3s ease-in-out;
 }
 #events-container {
-  flex: 1.2; /* کمی فضای بیشتر برای مناسبت‌ها */
+  flex: 1.2;
   min-width: 280px;
   transition: opacity 0.3s ease-in-out;
 }
 
 table {
   width: 100%;
-  border-collapse: separate; /* جدا کردن مرزها برای استایل بهتر */
+  border-collapse: separate;
   border-spacing: 0;
 }
 
+/* === تغییر اصلی اینجاست === */
 th {
-  padding: 15px;
+  padding: 10px;
   text-align: center;
-  font-weight: bold;
   color: var(--primary-color);
   border-bottom: 2px solid var(--border-color);
+}
+.weekday-modern {
+  font-weight: bold;
   font-size: 0.9em;
 }
+.weekday-ancient {
+  font-weight: normal;
+  font-size: 0.75em;
+  color: var(--light-text-color);
+  margin-top: 2px;
+}
+/* ========================= */
 
 td {
   border: 1px solid var(--border-color);
+  padding: 0;
   height: 120px;
-  padding: 8px;
-  vertical-align: top;
-  text-align: right;
-  font-size: 13px;
   transition: background-color 0.2s;
 }
+
+.cell-content {
+  width: 100%;
+  height: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
 td:hover {
     background-color: #f5f5f5;
 }
-/* گرد کردن گوشه‌های جدول */
 tr:first-child td:first-child { border-top-right-radius: 8px; }
 tr:first-child td:last-child { border-top-left-radius: 8px; }
 tr:last-child td:first-child { border-bottom-right-radius: 8px; }
@@ -143,15 +186,18 @@ tr:last-child td:last-child { border-bottom-left-radius: 8px; }
   font-size: 1.6em;
   font-weight: bold;
   color: var(--text-color);
-  margin-bottom: 6px;
+  text-align: right;
   padding-left: 6px;
+}
+
+.date-info-container {
+  text-align: left;
 }
 
 .date-info {
   font-size: 11px !important;
   color: var(--light-text-color);
   line-height: 1.5;
-  text-align: right;
   direction: ltr;
 }
 
@@ -166,13 +212,17 @@ tr:last-child td:last-child { border-bottom-left-radius: 8px; }
   color: var(--holiday-color) !important;
 }
 
+.today {
+  background-color: var(--today-bg);
+  border: 2px solid var(--today-highlight);
+}
 .today .day-number {
   background-color: var(--today-highlight);
   color: var(--white-color);
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  display: flex;
+  display: inline-flex;
   justify-content: center;
   align-items: center;
   line-height: 1;
@@ -182,7 +232,7 @@ tr:last-child td:last-child { border-bottom-left-radius: 8px; }
 #events-container {
   border-right: 1px solid var(--border-color);
   padding-right: 25px;
-  max-height: 680px; /* هماهنگ با ارتفاع جدول */
+  max-height: 680px;
   overflow-y: auto;
 }
 #events-container h3 {
@@ -212,7 +262,7 @@ tr:last-child td:last-child { border-bottom-left-radius: 8px; }
   font-weight: bold;
   color: var(--text-color);
   margin-left: 8px;
-  flex-shrink: 0; /* جلوگیری از کوچک شدن شماره روز */
+  flex-shrink: 0;
 }
 #events-container li.holiday-event {
   color: var(--holiday-color);

@@ -1,4 +1,4 @@
-// calendar-logic.js (نسخه نهایی با تمام اصلاحات)
+// calendar-logic.js (نسخه نهایی با اصلاح ساختار سلول)
 
 const PersianCalendar = {
     currentYear: 1404,
@@ -12,20 +12,23 @@ const PersianCalendar = {
 
         document.getElementById('prev-month').addEventListener('click', () => this.changeMonth(-1));
         document.getElementById('next-month').addEventListener('click', () => this.changeMonth(1));
+        document.getElementById('goto-today').addEventListener('click', () => this.gotoToday());
 
+        this.renderCalendar(this.currentYear, this.currentMonth);
+    },
+
+    gotoToday: function() {
+        const today = new Date();
+        const todayJalaali = CalendarConverter.jalaali.toJalaali(today.getFullYear(), today.getMonth() + 1, today.getDate());
+        this.currentYear = todayJalaali.jy;
+        this.currentMonth = todayJalaali.jm;
         this.renderCalendar(this.currentYear, this.currentMonth);
     },
 
     changeMonth: function (direction) {
         this.currentMonth += direction;
-        if (this.currentMonth > 12) {
-            this.currentMonth = 1;
-            this.currentYear++;
-        }
-        if (this.currentMonth < 1) {
-            this.currentMonth = 12;
-            this.currentYear--;
-        }
+        if (this.currentMonth > 12) { this.currentMonth = 1; this.currentYear++; }
+        if (this.currentMonth < 1) { this.currentMonth = 12; this.currentYear--; }
         this.renderCalendar(this.currentYear, this.currentMonth);
     },
 
@@ -41,16 +44,12 @@ const PersianCalendar = {
 
         setTimeout(() => {
             const daysInMonth = CalendarConverter.jalaali.jalaaliMonthLength(year, month);
-            
-            // --- محاسبه تاریخ ابتدا و انتهای ماه ---
             const startOfMonthGregorian = CalendarConverter.jalaali.toGregorian(year, month, 1);
             const endOfMonthGregorian = CalendarConverter.jalaali.toGregorian(year, month, daysInMonth);
             const startOfMonthHijri = CalendarConverter.hijri.toHijri(startOfMonthGregorian.gy, startOfMonthGregorian.gm - 1, startOfMonthGregorian.gd);
             const endOfMonthHijri = CalendarConverter.hijri.toHijri(endOfMonthGregorian.gy, endOfMonthGregorian.gm - 1, endOfMonthGregorian.gd);
 
-            // --- بروزرسانی عنوان ---
             const jalaaliMonthName = CalendarData.JALALI_MONTHS[month - 1];
-
             const gregorianMonthNameStart = CalendarData.GREGORIAN_MONTHS[startOfMonthGregorian.gm - 1];
             const gregorianMonthNameEnd = CalendarData.GREGORIAN_MONTHS[endOfMonthGregorian.gm - 1];
             const gregorianSubtitle = gregorianMonthNameStart === gregorianMonthNameEnd ? gregorianMonthNameStart : `${gregorianMonthNameStart} - ${gregorianMonthNameEnd}`;
@@ -64,14 +63,22 @@ const PersianCalendar = {
                 <span class="subtitle">${gregorianSubtitle} ${startOfMonthGregorian.gy} | ${hijriSubtitle} ${startOfMonthHijri.hy}</span>
             `;
 
-            // --- ساخت جدول تقویم ---
             const firstDayOfWeek = new Date(startOfMonthGregorian.gy, startOfMonthGregorian.gm - 1, startOfMonthGregorian.gd).getDay();
             const emptyCellsAtStart = (firstDayOfWeek + 1) % 7;
             
             let tableHtml = `<table>
-                <thead><tr><th>ش</th><th>ی</th><th>د</th><th>س</th><th>چ</th><th>پ</th><th>ج</th></tr></thead>
-                <tbody>`;
-
+    <thead>
+        <tr>
+            <th><div class="weekday-modern">شنبه</div><div class="weekday-ancient">کیوان شید</div></th>
+            <th><div class="weekday-modern">یک‌شنبه</div><div class="weekday-ancient">مهرشید</div></th>
+            <th><div class="weekday-modern">دوشنبه</div><div class="weekday-ancient">مهشید</div></th>
+            <th><div class="weekday-modern">سه‌شنبه</div><div class="weekday-ancient">بهرام شید</div></th>
+            <th><div class="weekday-modern">چهارشنبه</div><div class="weekday-ancient">تیرشید</div></th>
+            <th><div class="weekday-modern">پنج‌شنبه</div><div class="weekday-ancient">اورمزد شید</div></th>
+            <th><div class="weekday-modern">آدینه</div><div class="weekday-ancient">ناهیدشید</div></th>
+        </tr>
+    </thead>
+    <tbody>`;
             let row = "<tr>";
             for (let i = 0; i < emptyCellsAtStart; i++) { row += "<td></td>"; }
 
@@ -100,11 +107,17 @@ const PersianCalendar = {
                     monthEvents.push({ day: day, text: events[key].join('، '), isHoliday: isHoliday });
                 }
 
+                // === تغییر اصلی اینجاست: اضافه کردن div.cell-content ===
                 row += `<td class="${classes.trim()}">
-                            <div class="day-number">${day}</div>
-                            <div class="date-info">${miladiStr}</div>
-                            <div class="date-info">${hijriStr}</div>
+                            <div class="cell-content">
+                                <div class="day-number">${day}</div>
+                                <div class="date-info-container">
+                                    <div class="date-info">${miladiStr}</div>
+                                    <div class="date-info">${hijriStr}</div>
+                                </div>
+                            </div>
                         </td>`;
+                // ===============================================
 
                 if (dayOfWeek === 5) {
                     tableHtml += row + "</tr>";
@@ -113,6 +126,7 @@ const PersianCalendar = {
             }
 
             if (row !== "<tr>") {
+                const endOfMonthGregorian = CalendarConverter.jalaali.toGregorian(year, month, daysInMonth);
                 const lastDayOfWeek = new Date(endOfMonthGregorian.gy, endOfMonthGregorian.gm - 1, endOfMonthGregorian.gd).getDay();
                 const remainingCells = (5 - lastDayOfWeek + 7) % 7;
                 for (let i = 0; i < remainingCells; i++) { row += "<td></td>"; }
@@ -122,11 +136,10 @@ const PersianCalendar = {
             tableHtml += `</tbody></table>`;
             gridEl.innerHTML = tableHtml;
 
-            // --- ساخت لیست مناسبت‌ها ---
             let eventsHtml = '<h3>مناسبت‌های ماه</h3>';
             if (monthEvents.length > 0) {
                 eventsHtml += '<ul>';
-                monthEvents.sort((a,b) => a.day - b.day); // مرتب‌سازی مناسبت‌ها بر اساس روز
+                monthEvents.sort((a,b) => a.day - b.day);
                 monthEvents.forEach(event => {
                     const holidayClass = event.isHoliday ? ' class="holiday-event"' : '';
                     eventsHtml += `<li${holidayClass}><strong>روز ${event.day}:</strong> ${event.text}</li>`;
@@ -140,9 +153,8 @@ const PersianCalendar = {
             gridEl.style.opacity = 1;
             eventsEl.style.opacity = 1;
 
-        }, 250); // زمان انیمیشن
+        }, 250);
     }
 };
 
-// شروع برنامه
 document.addEventListener('DOMContentLoaded', () => PersianCalendar.init());
