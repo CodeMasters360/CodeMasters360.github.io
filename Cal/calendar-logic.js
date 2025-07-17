@@ -125,8 +125,8 @@ const PersianCalendar = {
                         <th><div class="weekday-modern">دوشنبه</div><div class="weekday-ancient">مهشید</div></th>
                         <th><div class="weekday-modern">سه‌شنبه</div><div class="weekday-ancient">بهرام شید</div></th>
                         <th><div class="weekday-modern">چهارشنبه</div><div class="weekday-ancient">تیرشید</div></th>
-                        <th><div class="weekday-modern">پنج‌شنبه</div><div class="weekday-ancient">هرمزشید</div></th>
-                        <th><div class="weekday-modern">جمعه</div><div class="weekday-ancient">ناهیدشید</div></th>
+                        <th><div class="weekday-modern">پنج‌شنبه</div><div class="weekday-ancient">اورمزد شید</div></th>
+                        <th><div class="weekday-modern">آدینه</div><div class="weekday-ancient">ناهیدشید</div></th>
                     </tr>
                 </thead>
                 <tbody>`;
