@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>تقویم ۱۴۰۴</title>
+  <link rel="stylesheet" href="./style2.css">
+</head>
+<body>
+
+  <div class="calendar-wrapper">
+    <div class="calendar-header">
+      <!-- دکمه قبلی (فلش به سمت راست) -->
+      <button id="prev-month" class="nav-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+      </button>
+      
+      <div id="month-year-display"></div>
+      
+      <!-- دکمه بعدی (فلش به سمت چپ) -->
+      <button id="next-month" class="nav-button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+      </button>
+    </div>
+    
+    <div class="calendar-main-content">
+      <div id="calendar-grid">
+        <!-- جدول تقویم اینجا توسط جاوااسکریپت ساخته می‌شود -->
+      </div>
+      <div id="events-container">
+        <!-- لیست مناسبت‌ها اینجا توسط جاوااسکریپت ساخته می‌شود -->
+      </div>
+    </div>
+  </div>
+
+  <!-- بارگذاری فایل‌های تفکیک شده -->
+  <script src="calendar-data.js"></script>
+  <script src="calendar-converter.js"></script>
+  <script src="events.js"></script>
+  <script src="calendar-logic.js"></script>
+
+</body>
+</html>
