@@ -1,4 +1,4 @@
-// calendar-logic.js (نسخه نهایی با تغییرات ریسپانسیو)
+// calendar-logic.js (نسخه نهایی با تغییرات ریسپانسیو و فرمت تاریخ قمری)
 
 const PersianCalendar = {
     currentYear: 1404,
@@ -113,7 +113,6 @@ const PersianCalendar = {
             const [startGy, startGm] = startOfMonthData.g.split('-').map(Number);
             const [endGy, endGm] = endOfMonthData.g.split('-').map(Number);
             const [startHy, startHm] = startOfMonthData.h.split('-').map(Number);
-            // const [endHy, endHm] is not directly used for subtitle (only month)
             
             const gregorianMonthNameStart = CalendarData.GREGORIAN_MONTHS[startGm - 1];
             const gregorianMonthNameEnd = CalendarData.GREGORIAN_MONTHS[endGm - 1];
@@ -161,14 +160,14 @@ const PersianCalendar = {
 
                 let miladiStr;
                 let hijriStr;
+                let hijriDateClass = 'date-info'; // Default class
 
                 if (window.innerWidth <= this.MOBILE_BREAKPOINT) {
                     // فرمت کوتاه برای موبایل
                     miladiStr = `${this.padZero(gm)}-${this.padZero(gd)}`; // 07-17
-                    // مطمئن شویم که CalendarData.HIJRI_MONTHS با فرمت 'صفر' است نه 'صفر'
-                    // همچنین نام ماه قمری را خلاصه می‌کنیم یا کامل نگه می‌داریم بسته به طول
-                    const hijriMonthShort = CalendarData.HIJRI_MONTHS[hm - 1]; // "صفر"
-                    hijriStr = `${hd} ${hijriMonthShort}`; // 21 صفر
+                    const hijriMonthName = CalendarData.HIJRI_MONTHS[hm - 1];
+                    hijriStr = `${hd} ${hijriMonthName}`; // 21 محرم  <-- بازگرداندن به فرمت "روز ماه"
+                    hijriDateClass = 'date-info date-info-hijri-mobile'; // اضافه کردن کلاس جدید برای استایل
                 } else {
                     // فرمت کامل برای دسکتاپ
                     miladiStr = `${dayData.g} (${CalendarData.GREGORIAN_MONTHS[gm - 1].substring(0, 3)})`;
@@ -192,7 +191,7 @@ const PersianCalendar = {
                                 <div class="day-number">${day}</div>
                                 <div class="date-info-container">
                                     <div class="date-info">${miladiStr}</div>
-                                    <div class="date-info">${hijriStr}</div>
+                                    <div class="${hijriDateClass}">${hijriStr}</div>
                                 </div>
                             </div>
                         </td>`;

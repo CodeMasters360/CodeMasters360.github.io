@@ -1,4 +1,4 @@
-/* style.css (نسخه نهایی با تغییرات ریسپانسیو) */
+/* style.css (نسخه نهایی با تغییرات ریسپانسیو و فونت قمری و روزهای هفته سنتی در موبایل) */
 
 @font-face {
   font-family: 'Vazirmatn';
@@ -372,8 +372,17 @@ tr:last-child td:last-child { border-bottom-left-radius: 8px; }
     font-size: 0.75em; /* کاهش اندازه فونت هدر */
   }
 
+  .weekday-modern {
+    font-weight: bold;
+    font-size: 0.9em; /* حفظ اندازه نسبی برای مدرن */
+  }
+
   .weekday-ancient {
-    display: none;
+    display: block; /* نمایش مجدد نام‌های باستانی */
+    font-size: 0.6em; /* فونت بسیار ریزتر */
+    line-height: 1; /* ارتفاع خط کم برای فشرده‌سازی */
+    margin-top: 0px; /* حذف فاصله از بالای روز مدرن */
+    color: var(--light-text-color); /* حفظ رنگ */
   }
 
   td {
@@ -412,12 +421,20 @@ tr:last-child td:last-child { border-bottom-left-radius: 8px; }
   }
 
   .date-info {
-    font-size: 9px !important; /* کاهش شدید اندازه فونت اطلاعات تاریخ */
-    line-height: 1.1; /* تنظیم فاصله خطی برای جلوگیری از همپوشانی */
-    white-space: nowrap; /* از شکستن خط جلوگیری شود */
-    overflow: hidden; /* مخفی کردن سرریز */
-    text-overflow: ellipsis; /* اضافه کردن سه نقطه */
-    direction: ltr; /* اطمینان از نمایش صحیح اعداد قبل از متن ماه */
+    font-size: 9px !important; /* اندازه فونت برای تاریخ میلادی (پیش‌فرض) */
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    direction: ltr; /* اطمینان از نمایش صحیح اعداد قبل از متن ماه میلادی */
+  }
+
+  /* استایل خاص برای تاریخ قمری در موبایل */
+  .date-info.date-info-hijri-mobile {
+    font-size: 6px !important; /* فونت باز هم کوچکتر برای تاریخ قمری */
+    line-height: 1 !important; /* تنظیم ارتفاع خط */
+    direction: rtl !important; /* تنظیم جهت از راست به چپ برای متن فارسی ماه */
+    text-align: right; /* هم‌ترازی به راست برای متن قمری */
   }
   
   /* رویدادها */
