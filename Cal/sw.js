@@ -1,6 +1,6 @@
 // sw.js (نسخه اصلاح شده با آیکن‌ها)
 
-const CACHE_NAME = 'persian-calendar-cache-v7';
+const CACHE_NAME = 'persian-calendar-cache-v8';
 const urlsToCache = [
   'calander2.html',
   'style2.css',
@@ -12,7 +12,8 @@ const urlsToCache = [
   // === فایل‌های جدید اضافه شده به لیست کش ===
   'manifest.json', // خود مانیفست هم بهتره کش بشه
   'icon-192.png',
-  'icon-512.png'
+  'icon-512.png',
+   'favicon.ico'
   // ==========================================
 ];
 
