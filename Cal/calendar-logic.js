@@ -107,9 +107,11 @@ const PersianCalendar = {
             const gregorianMonthNameEnd = CalendarData.GREGORIAN_MONTHS[endGm - 1];
             const gregorianSubtitle = gregorianMonthNameStart === gregorianMonthNameEnd ? gregorianMonthNameStart : `${gregorianMonthNameStart} - ${gregorianMonthNameEnd}`;
             
-            const hijriMonthNameStart = CalendarData.HIJRI_MONTHS[startHm];
-            const hijriMonthNameEnd = CalendarData.HIJRI_MONTHS[endHm];
-            const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthNameStart : `${hijriMonthNameStart} - ${hijriMonthNameEnd}`;
+            const hijriMonthNameStart = CalendarData.HIJRI_MONTHS[startHm - 1];
+const hijriMonthNameEnd = CalendarData.HIJRI_MONTHS[endOfMonthData.h.split('-').map(Number)[1] - 1];
+// ===================================
+
+const hijriSubtitle = hijriMonthNameStart === hijriMonthNameEnd ? hijriMonthNameStart : `${hijriMonthNameStart} - ${hijriMonthNameEnd}`;
             
             subtitleDisplay.textContent = `${gregorianSubtitle} ${startGy} | ${hijriSubtitle} ${startHy}`;
 
