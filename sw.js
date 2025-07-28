@@ -1,20 +1,21 @@
-const CACHE_NAME = 'otp-generator-cache-v4'; // Version incremented to trigger update
+const CACHE_NAME = 'otp-generator-cache-v5'; // Version incremented to trigger update
 const urlsToCache = [
   '/',
   'app.html',
   'style.css',
   'script.js',
   'pwa-loader.js',
-  // ADDED: Caching the icon files for full offline support
   'icons/icon-192.png',
-  'icons/icon-512.png'
+  'icons/icon-512.png',
+  // ADDED: Caching the favicon file
+  'faviconq.ico'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then(cache => {
-        console.log('Opened cache and caching app assets including icons');
+        console.log('Opened cache and caching all assets including favicon');
         return cache.addAll(urlsToCache);
       })
   );
