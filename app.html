@@ -5,15 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OTP Generator</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#007bff">
     <link rel="stylesheet" href="style.css">
+    <!-- 
+      Updated CSP:
+      - 'ws:' is added to connect-src for VS Code Live Preview/Server compatibility during development.
+      - style-src and script-src are kept strict.
+    -->
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; font-src 'self'; connect-src 'self' http://worldtimeapi.org">
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' http://worldtimeapi.org ws:;">
 </head>
 
 <body>
     <div class="container">
         <h1>OTP Generator</h1>
 
+        <!-- The 'hidden' class is now used instead of inline styles -->
         <div class="login-container">
             <input type="password" id="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4"
                 placeholder="Enter your PIN">
@@ -22,7 +30,7 @@
             <button id="reset-btn-login" class="reset-button">Reset App</button>
         </div>
 
-        <div class="otp-container" style="display: none;">
+        <div class="otp-container hidden">
             <div class="otp-header">
                 <div id="current-time"></div>
                 <span id="time-status"></span>
@@ -38,11 +46,10 @@
             <div id="otp-list">
             </div>
             <hr>
-            <div id="logout-countdown" style="font-size: 1.5em; font-weight: bold; color: red; margin-top: 10px;">
-            </div>
+            <div id="logout-countdown"></div>
             <hr>
             <button id="show-add-otp-btn">Add new account</button>
-            <div id="add-otp-section" style="display: none;">
+            <div id="add-otp-section" class="hidden">
                 <input type="text" id="account-name-input" placeholder="Account Name (e.g., Google)">
                 <input type="text" id="new-secret-key-input" placeholder="Secret Key">
                 <button id="add-otp-btn">Add OTP Account</button>
@@ -53,7 +60,7 @@
             </div>
         </div>
 
-        <div class="set-pin-container" style="display: none;">
+        <div class="set-pin-container hidden">
             <input type="password" id="new-pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4"
                 placeholder="Set a new 4-digit PIN">
             <button id="set-pin-btn">Set PIN</button>
@@ -72,6 +79,10 @@
             </div>
         </div>
     </div>
+
+    <!-- External script for PWA loader -->
+    <script src="pwa-loader.js"></script>
+    <!-- Main application script -->
     <script src="script.js"></script>
 </body>
 
