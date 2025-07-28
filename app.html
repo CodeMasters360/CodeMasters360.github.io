@@ -7,21 +7,20 @@
     <title>OTP Generator</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#007bff">
+    
+    <!-- ADDED: Apple touch icon for better iOS integration -->
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
     <link rel="stylesheet" href="style.css">
-    <!-- 
-      Updated CSP:
-      - 'ws:' is added to connect-src for VS Code Live Preview/Server compatibility during development.
-      - style-src and script-src are kept strict.
-    -->
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' http://worldtimeapi.org ws:;">
+        content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://worldtimeapi.org ws:;">
 </head>
 
 <body>
+    <!-- The rest of the body remains unchanged -->
     <div class="container">
         <h1>OTP Generator</h1>
 
-        <!-- The 'hidden' class is now used instead of inline styles -->
         <div class="login-container">
             <input type="password" id="pin-input" inputmode="numeric" pattern="[0-9]*" maxlength="4"
                 placeholder="Enter your PIN">
@@ -80,9 +79,7 @@
         </div>
     </div>
 
-    <!-- External script for PWA loader -->
     <script src="pwa-loader.js"></script>
-    <!-- Main application script -->
     <script src="script.js"></script>
 </body>
 
