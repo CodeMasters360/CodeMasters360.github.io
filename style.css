@@ -53,6 +53,11 @@ button:hover {
     background-color: #0056b3;
 }
 
+button:disabled {
+    background-color: #a0a0a0;
+    cursor: not-allowed;
+}
+
 .reset-button,
 #logout-btn {
     background-color: #dc3545;
@@ -122,11 +127,13 @@ button:hover {
 
 .delete-btn,
 .copy-btn {
-    padding: 5px 10px;
+    padding: 5px 0;
     font-size: 0.8rem;
     background-color: #6c757d;
-    min-width: 45px;
+    width: 60px;
     text-align: center;
+    border: none;
+    margin: 0 4px;
 }
 
 .delete-btn {
@@ -165,6 +172,8 @@ button:hover {
     font-size: 0.8em;
     color: #777;
     margin-left: 10px;
+    width: 30px; /* Give timer a fixed width */
+    text-align: right;
 }
 
 #notification-container {
@@ -315,12 +324,10 @@ input:checked+.slider:before {
     margin-left: 10px;
 }
 
-/* New class to hide elements, compatible with CSP */
 .hidden {
     display: none !important;
 }
 
-/* Style for logout countdown, moved from inline */
 #logout-countdown {
     font-size: 1.5em;
     font-weight: bold;
