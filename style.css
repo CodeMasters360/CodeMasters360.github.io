@@ -125,15 +125,17 @@ button:disabled {
     letter-spacing: 2px;
 }
 
+/* --- FIXED BUTTON STYLES --- */
 .delete-btn,
 .copy-btn {
-    padding: 5px 0;
+    width: 60px;
     font-size: 0.8rem;
     background-color: #6c757d;
-    width: 60px;
-    text-align: center;
-    border: none;
     margin: 0 4px;
+    padding: 5px 0; /* Only vertical padding */
+    display: flex; /* Enable flexbox for alignment */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
 }
 
 .delete-btn {
@@ -172,7 +174,7 @@ button:disabled {
     font-size: 0.8em;
     color: #777;
     margin-left: 10px;
-    width: 30px; /* Give timer a fixed width */
+    width: 30px; 
     text-align: right;
 }
 
