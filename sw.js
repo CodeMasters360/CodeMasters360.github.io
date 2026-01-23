@@ -1,4 +1,4 @@
-const CACHE_NAME = 'otp-generator-cache-v85117'; // Version incremented for update
+const CACHE_NAME = 'otp-generator-cache-v91'; // Version incremented for update
 const urlsToCache = [
   'app.html',
   'style.css',

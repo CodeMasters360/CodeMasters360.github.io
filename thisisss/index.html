@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>همین چیزه دیگه</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>چیزه</h1>
+            <div class="status" id="status">آفلاین</div>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab active" data-tab="encrypt">ببند</button>
+                    <button class="tab" data-tab="decrypt">وا کن</button>
+                </div>
+
+                <div class="tab-content active" id="encrypt">
+                    <h2>انجام</h2>
+                    <form id="encryptForm">
+                        <div class="form-group">
+                            <label for="plaintext">سخن شما</label>
+                            <textarea id="plaintext" rows="6"  required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="encryptPassword">چیز اولیه</label>
+                            <input type="password" id="encryptPassword"  required>
+                        </div>
+
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="protectEncrypted">
+                            <label for="protectEncrypted">چیز اضافی</label>
+                        </div>
+
+                        <div class="form-group" id="protectPassGroup" style="display: none;">
+                            <label for="protectPassword">چیز نهایی</label>
+                            <input type="password" id="protectPassword" >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">بچیز</button>
+                    </form>
+
+                    <div class="result" id="encryptResult" style="display: none;">
+                        <h3>نتیجه چیزی:</h3>
+                        <textarea readonly id="ciphertext" rows="6"></textarea>
+                        <button class="btn btn-secondary" onclick="copyToClipboard('ciphertext')">📋 کپی</button>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="decrypt">
+                    <h2>وا کردنی</h2>
+                    <form id="decryptForm">
+                        <div class="form-group">
+                            <label for="encryptedText">سخنش</label>
+                            <textarea id="encryptedText" rows="6"  required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="decryptPassword">چیز وارد کن</label>
+                            <input type="password" id="decryptPassword" required>
+                        </div>
+
+                        <div class="form-group checkbox">
+                            <input type="checkbox" id="hasProtection">
+                            <label for="hasProtection">چیز اضافی</label>
+                        </div>
+
+                        <div class="form-group" id="protectDecryptGroup" style="display: none;">
+                            <label for="protectDecryptPassword">چیز اضافی خیلی اضافی</label>
+                            <input type="password" id="protectDecryptPassword" >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">وا کن</button>
+                    </form>
+
+                    <div class="result" id="decryptResult" style="display: none;">
+                        <h3>پیام رمزگشایی شده:</h3>
+                        <textarea readonly id="decryptedText" rows="6"></textarea>
+                        <button class="btn btn-secondary" onclick="copyToClipboard('decryptedText')">📋 کپی</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-card">
+                درود بر شما
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -183,16 +183,19 @@ document.addEventListener("DOMContentLoaded", function () {
     // Network and Time Functions
     async function fetchServerTime() {
         try {
-            const response = await fetch('https://worldtimeapi.org/api/ip', { cache: 'no-store' });
+            // تغییر آدرس به http
+            const response = await fetch('http://worldtimeapi.org/api/ip', { cache: 'no-store' });
             if (!response.ok) throw new Error(`Server responded with ${response.status}`);
             const data = await response.json();
             serverTimeOffset = new Date(data.datetime).getTime() - Date.now();
             timeStatusDisplay.textContent = "Online";
             timeStatusDisplay.className = "online";
         } catch (error) {
+            // اگر خطا بود، از زمان محلی استفاده کن و وضعیت را نمایش بده
             serverTimeOffset = 0;
             timeStatusDisplay.textContent = "Offline";
             timeStatusDisplay.className = "";
+            showNotification("Could not fetch server time. Using local time.", true);
             console.warn("Could not fetch server time, using local time.", error.message);
         }
         await updateDisplayedOTPs();
