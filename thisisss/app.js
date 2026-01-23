@@ -1,8 +1,23 @@
-// ثبت Service Worker
+// ثبت Service Worker با مدیریت بهتر
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js')
-        .then(() => console.log('Service Worker registered'))
-        .catch(err => console.error('SW registration failed:', err));
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+            .then((registration) => {
+                console.log('✅ Service Worker registered successfully!');
+                console.log('Scope:', registration.scope);
+                
+                // بررسی آپدیت
+                registration.addEventListener('updatefound', () => {
+                    console.log('Service Worker update found!');
+                });
+            })
+            .catch(err => console.error('❌ SW registration failed:', err));
+    });
+    
+    // گوش دادن به تغییرات Service Worker
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        console.log('Service Worker controller changed');
+    });
 }
 
 // بررسی وضعیت آنلاین/آفلاین
@@ -87,7 +102,7 @@ function persian2ab(persianStr) {
         const lowIndex = PERSIAN_CHARS.indexOf(lowChar);
         
         if (highIndex === -1 || lowIndex === -1) {
-            throw new Error('داده رمزشده نامعتبر است');
+            throw new Error('داده چیز نامعتبر است');
         }
         
         bytes[i / 2] = (highIndex << 4) | lowIndex;
@@ -259,4 +274,3 @@ function copyToClipboard(elementId) {
     document.execCommand('copy');
     alert('متن کپی شد!');
 }
-  
