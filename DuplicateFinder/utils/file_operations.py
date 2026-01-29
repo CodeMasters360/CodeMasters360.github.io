@@ -8,8 +8,11 @@ def move_to_recycle_bin(file_paths):
     
     for file_path in file_paths:
         try:
-            if os.path.exists(file_path):
-                send2trash(file_path)
+            # Normalize path to use Windows backslashes
+            normalized_path = os.path.normpath(file_path)
+            
+            if os.path.exists(normalized_path):
+                send2trash(normalized_path)
                 success.append(file_path)
             else:
                 failed.append(f"{file_path} (File not found)")

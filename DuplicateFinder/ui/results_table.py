@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import (QTableWidget, QTableWidgetItem, QHeaderView, 
-                             QMenu, QApplication, QCheckBox, QWidget, QHBoxLayout)
+                             QMenu, QApplication, QCheckBox, QWidget, QHBoxLayout,
+                             QPushButton)
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QColor
 import os
@@ -85,7 +86,6 @@ class ResultsTable(QTableWidget):
                 self.setItem(row, 6, path_item)
                 
                 # Action buttons
-                from PyQt5.QtWidgets import QPushButton, QHBoxLayout
                 btn_widget = QWidget()
                 btn_layout = QHBoxLayout(btn_widget)
                 btn_layout.setContentsMargins(2, 2, 2, 2)
@@ -155,8 +155,9 @@ class ResultsTable(QTableWidget):
             QApplication.clipboard().setText(full_path)
             
     def open_location(self, file_path):
-        if os.path.exists(file_path):
-            subprocess.run(['explorer', '/select,', os.path.normpath(file_path)])
+        normalized_path = os.path.normpath(file_path)
+        if os.path.exists(normalized_path):
+            subprocess.run(['explorer', '/select,', normalized_path])
             
     def delete_single_file(self, row):
         from PyQt5.QtWidgets import QMessageBox

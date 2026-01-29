@@ -245,7 +245,7 @@ class WorkerThread(QThread):
     def compress_image(self, source, destination):
         img = Image.open(source)
         # Convert RGBA to RGB if saving as JPEG
-        if img.mode == 'RGBA' and destination.lower().endswith('.jpg'):
+        if img.mode == 'RGBA' and os.path.splitext(destination)[1].lower() in ['.jpg', '.jpeg']:
             img = img.convert('RGB')
         img.save(destination, quality=self.image_quality, optimize=True)
     
@@ -434,12 +434,12 @@ class MainWindow(QMainWindow):
     def open_source(self):
         path = self.source_input.text()
         if path and os.path.exists(path):
-            os.startfile(path)
+            os.startfile(os.path.normpath(path))
     
     def open_destination(self):
         path = self.dest_input.text()
         if path and os.path.exists(path):
-            os.startfile(path)
+            os.startfile(os.path.normpath(path))
     
     def filter_mode_changed(self):
         mode = self.filter_combo.currentText()
@@ -470,6 +470,10 @@ class MainWindow(QMainWindow):
     def start_operation(self):
         source = self.source_input.text()
         destination = self.dest_input.text()
+        
+        # Normalize paths to use consistent separators
+        source = os.path.normpath(source) if source else ""
+        destination = os.path.normpath(destination) if destination else ""
         
         if not source or not os.path.exists(source):
             QMessageBox.warning(self, "Error", "Invalid source path")

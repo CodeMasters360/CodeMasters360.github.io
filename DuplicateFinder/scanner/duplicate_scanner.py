@@ -43,7 +43,7 @@ class DuplicateScanner:
                     continue
                     
                 for filename in filenames:
-                    file_path = os.path.join(root, filename)
+                    file_path = os.path.normpath(os.path.join(root, filename))
                     
                     # Check extension filters
                     if not self.is_allowed_extension(filename):
@@ -131,14 +131,15 @@ class DuplicateScanner:
                 formatted_group = []
                 for file_info in file_list:
                     _, ext = os.path.splitext(file_info['name'])
+                    full_path_normalized = os.path.normpath(file_info['full_path'])
                     formatted_group.append({
-                        'full_path': file_info['full_path'],
+                        'full_path': full_path_normalized,
                         'name': file_info['name'],
                         'extension': ext,
                         'size': file_info['size'],
                         'modified': datetime.fromtimestamp(file_info['modified']).strftime('%Y-%m-%d %H:%M:%S'),
                         'modified_timestamp': file_info['modified'],
-                        'path': os.path.dirname(file_info['full_path'])
+                        'path': os.path.dirname(full_path_normalized)
                     })
                 duplicates.append(formatted_group)
                 
